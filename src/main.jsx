@@ -14,7 +14,10 @@ createRoot(document.getElementById('root')).render(
       <BrowserRouter>
 
         <CssBaseline />
-        <App />
+
+        <div onContextMenu={(e)=> e.preventDefault()}>
+          <App />
+        </div>
 
       </BrowserRouter>
     </HelmetProvider>

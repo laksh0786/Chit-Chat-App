@@ -1,5 +1,5 @@
 import { CameraAlt } from '@mui/icons-material';
-import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
+import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { VisuallyHiddenInput } from '../components/styles/StyledComponents';
 import { dataValidator } from '../utils/validators';

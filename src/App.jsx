@@ -1,6 +1,7 @@
-import React, { lazy } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import ProtectRoute from './components/auth/ProtectRoute';
+import LayoutLoader from './components/layouts/LayoutLoader';
 
 //This is lazy loading of components that is used for code splitting which is a performance optimization technique that allows you to load only the required modules on the initial load and then load the rest of the modules on demand.
 
@@ -16,23 +17,26 @@ const App = () => {
 
   return (
 
-    <Routes>
+    <Suspense fallback={<LayoutLoader/>}>
+      <Routes>
 
-      <Route element={<ProtectRoute  user={user}/>}>
-        <Route path="/" element={<Home />} />
-        <Route path="/chat/:chatId" element={<Chat />} />
-        <Route path="/groups" element={<Group />} />
-      </Route>
+        <Route element={<ProtectRoute user={user} />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat/:chatId" element={<Chat />} />
+          <Route path="/groups" element={<Group />} />
+        </Route>
 
-      <Route path="/login" element={
-        <ProtectRoute user={!user} redirect='/'>
-          <Login />
-        </ProtectRoute>
-      } />
+        <Route path="/login" element={
+          <ProtectRoute user={!user} redirect='/'>
+            <Login />
+          </ProtectRoute>
+        } />
 
-      <Route path="*" element={<NotFound/>}></Route>
+        <Route path="*" element={<NotFound />}></Route>
 
-    </Routes>
+      </Routes>
+    </Suspense>
+
   )
 }
 

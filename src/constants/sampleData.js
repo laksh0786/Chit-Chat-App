@@ -49,3 +49,41 @@ export const sampleNotifications = [
     }
 
 ]
+
+
+export const sampleMessages = [
+    {
+        attachments:[
+            {
+                public_id:"asdsad",
+                url:"https://www.w3schools.com/howto/img_avatar.png"
+            }
+        ],
+
+        content:"Hey everyone how do you do??",
+        _id:"shhsuhsuhsjbbvbybdyb",
+        sender:{
+            _id:"user._id",
+            name:"John Doe",
+        },
+        chat:"chatId",
+        createdAt:"2021-10-10T10:10:10.000Z"
+    },
+    {
+        attachments:[
+            {
+                public_id:"asdsad",
+                url:"https://www.w3schools.com/howto/img_avatar.png"
+            }
+        ],
+
+        content:"Hey Guys how do you do??",
+        _id:"shhsuhsuhsjbbvbybdyb",
+        sender:{
+            _id:"ndnbdwubqpspokpkds",
+            name:"Lakshay",
+        },
+        chat:"chatId",
+        createdAt:"2021-10-10T10:10:10.000Z"
+    },
+]

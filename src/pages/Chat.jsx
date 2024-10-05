@@ -9,8 +9,8 @@ import { sampleMessages } from '../constants/sampleData';
 import MessageComponent from '../components/shared/MessageComponent';
 
 const sampleUser = {
-  _id:"ndnbdwubqpspokpkds",
-  name:"John Doe",
+  _id: "ndnbdwubqpspokpkds",
+  name: "John Doe",
 }
 
 const Chat = () => {
@@ -23,28 +23,17 @@ const Chat = () => {
       <Stack ref={containerRef} height={"90%"} spacing={"1.5rem"} sx={{
         boxSizing: 'border-box',
         padding: '1.5rem',
-        bgcolor: grayColor, // Light gray background
+        bgcolor: grayColor,
         overflowY: 'auto',
-        overflowX: 'hidden',
-        borderRadius: '0.5rem', // Smooth corners
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+        borderRadius: '0.5rem',
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
       }}>
-        
-        {/* <Box sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          color: 'gray',
-          fontStyle: 'italic',
-        }}>
-          No messages yet. Start the conversation!
-        </Box> */}
 
+        {/* Messages */}
         {
-          sampleMessages.map((i)=>{
-            return(
-              <MessageComponent message={i} user={sampleUser}/>
+          sampleMessages.map((i) => {
+            return (
+              <MessageComponent key={i._id} message={i} user={sampleUser} />
             )
           })
         }
@@ -56,28 +45,38 @@ const Chat = () => {
           borderRadius: '1rem',
           borderTopLeftRadius: '0',
           borderTopRightRadius: '0',
-          boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', // A slight shadow for the form
-          backgroundColor: '#fff', // Form background color
+          boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#fff',
         }}>
 
           {/* Attach File Icon */}
           <IconButton sx={{
             position: 'absolute',
-            left: '1rem',
+            left: '1.1rem',
             rotate: '45deg',
-            bgcolor: '#f0f0f0',
+            bgcolor: '#f5f5f5',
             borderRadius: '50%',
             padding: '0.5rem',
             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
             '&:hover': {
-              bgcolor: '#e0e0e0'
+              bgcolor: '#e0e0e0',
             }
           }}>
             <AttachFileIcon />
           </IconButton>
 
           {/* Input Box */}
-          <InputBox placeholder='Type your message here....' />
+          <InputBox placeholder='Type your message here....' sx={{
+            padding: '1rem 4rem',
+            borderRadius: '1.5rem',
+            border: '1px solid #ddd',
+            boxShadow: 'inset 0 2px 6px rgba(0, 0, 0, 0.05)',
+            transition: '0.2s ease',
+            '&:focus': {
+              borderColor: orange,
+              boxShadow: 'inset 0 4px 12px rgba(0, 0, 0, 0.1)',
+            }
+          }} />
 
           {/* Enhanced Send Button */}
           <IconButton type='submit' sx={{
@@ -89,6 +88,7 @@ const Chat = () => {
             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
             '&:hover': {
+              transform: 'scale(1.05)',
               boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)',
             }
           }}>

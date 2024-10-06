@@ -1,13 +1,19 @@
 import { KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material'
-import { Box, Drawer, IconButton, Tooltip } from '@mui/material'
+import { Box, Drawer, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import Grid from '@mui/material/Grid2'
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import { matteBlack } from '../constants/color'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import AvatarCard from '../components/shared/Avatarcard'
+import { sampleChats } from '../constants/sampleData'
+import {Link} from '../components/styles/StyledComponents'
 
 const Group = () => {
 
   const navigate = useNavigate();
+
+  const chatId = useSearchParams()[0].get("group");
+  console.log(chatId);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -77,7 +83,7 @@ const Group = () => {
         bgcolor={"#f5f5f5"}
         height={"100%"}
       >
-        Group List
+        <GroupList myGroups={sampleChats} chatId={chatId}/>
       </Grid>
 
       <Grid size={{ xs: 12, sm: 8 }} height={"100%"} sx={{
@@ -98,7 +104,7 @@ const Group = () => {
           sm: "none"
         }
       }}>
-        Group List
+        <GroupList w={"50vw"} myGroups={sampleChats} chatId={chatId}/>
       </Drawer>
 
     </Grid>
@@ -106,6 +112,48 @@ const Group = () => {
 }
 
 
+const GroupList = ({ w = "100%", myGroups = [], chatId }) => {
+  return (
+    <Stack width={w}>
+      {
+        myGroups.length > 0 ?
+
+          myGroups.map((myGroup) => {
+
+            return <GroupListItem key={myGroup._id} group={myGroup} chatId={chatId} />
+
+          })
+          : <Typography variant="h6"
+            sx={{ textAlign: "center", padding: "1rem", color: "gray" }}
+          >
+            No Groups
+          </Typography>
+      }
+    </Stack>
+  )
+}
+
+const GroupListItem = memo(({ group, chatId }) => {
+
+  const { name, avatar, _id } = group
+
+  return (
+    <Link to={`?group=${_id}`} onClick={(e)=>{
+      if(chatId === _id){
+        e.preventDefault();
+      }
+    }}>
+
+      <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
+
+        <AvatarCard avatar={avatar} />
+        <Typography>{name}</Typography>
+
+      </Stack>
+
+    </Link>
+  )
+})
 
 
 export default Group

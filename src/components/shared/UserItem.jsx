@@ -21,7 +21,6 @@ const UserItem = ({ user, handler, handlerIsLoading , isAdded = false }) => {
     >
       <Stack direction="row" alignItems="center" spacing={2} width="100%">
         <Avatar
-          src={avatar}
           sx={{
             width: 48,
             height: 48,

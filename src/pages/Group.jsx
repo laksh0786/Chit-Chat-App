@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { matteblack as matteBlack, lightGray, lightBlue as primaryColor, darkGray } from '../constants/color';
+import { matteBlack, lightGray, lightBlue as primaryColor, darkGray } from '../constants/color';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AvatarCard from '../components/shared/Avatarcard';
 import { sampleChats } from '../constants/sampleData';
@@ -12,44 +12,40 @@ const Group = () => {
   
   const navigate = useNavigate();
 
-  //Get chatId from URL
+  // Get chatId from URL
   const chatId = useSearchParams()[0].get('group');
   console.log(chatId);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isEdit , setIsEdit] = useState(false);
-  const [groupName , setGroupName] = useState('');
-  const [groupNameUpdated , setGroupNameUpdated] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
+  const [groupName, setGroupName] = useState('');
+  const [groupNameUpdated, setGroupNameUpdated] = useState('');
 
   const navigateBack = () => navigate('/');
 
   const handleMobile = () => setIsMobileMenuOpen(prev => !prev);
   const handleMobileClose = () => setIsMobileMenuOpen(false);
 
-
-  //Update Group Name Handler
+  // Update Group Name Handler
   const updateGroupName = () => {
-    console.log("Group Name Updated to : " , groupNameUpdated);
+    console.log("Group Name Updated to:", groupNameUpdated);
     setIsEdit(false);
-  }
+  };
 
-  //get group name
-  useEffect(()=>{
-
+  // Get group name
+  useEffect(() => {
     setGroupName(`Group ${chatId}`);
     setGroupNameUpdated(`Group ${chatId}`);
 
-    //clean the values if the chatId (chat group) changes
-    return ()=>{
+    // Clean the values if the chatId (chat group) changes
+    return () => {
       setGroupName('');
       setGroupNameUpdated('');
       setIsEdit(false);
-    }
-  
-  } , [chatId]);
-  
+    };
+  }, [chatId]);
 
-  //Icon Buttons JSX element
+  // Icon Buttons JSX element
   const IconBtns = (
     <>
       <Box sx={{
@@ -85,35 +81,32 @@ const Group = () => {
     </>
   );
 
-
-  //Group Name JSX element
-  const GroupName = <Stack direction={"row"} alignItems={"center"} justifyContent={"center"} spacing={"1rem"} padding={"2rem"}>
-
-    {
-      isEdit ? <>
-        
-        <TextField 
-          label="Group Name"
-          value={groupNameUpdated}
-          onChange={(e)=>setGroupNameUpdated(e.target.value)} 
-        />
-        
-        <IconButton onClick={updateGroupName}>
-          <DoneIcon/>
-        </IconButton>
-      
-      </>  : <>
-
-        <Typography variant="h4" sx={{ color: darkGray, fontWeight: 'bold', marginBottom: '1rem' }}>{groupName}</Typography>
-        <IconButton onClick={()=>{
-          setIsEdit(true);
-        }}>
-          <EditIcon/>
-        </IconButton>
-      </>
-    }
-
-  </Stack> 
+  // Group Name JSX element
+  const GroupName = (
+    <Stack direction={"row"} alignItems={"center"} justifyContent={"center"} spacing={"1rem"} padding={"2rem"}>
+      {isEdit ? (
+        <>
+          <TextField 
+            label="Group Name"
+            value={groupNameUpdated}
+            onChange={(e) => setGroupNameUpdated(e.target.value)} 
+          />
+          <IconButton onClick={updateGroupName}>
+            <DoneIcon />
+          </IconButton>
+        </>
+      ) : (
+        <>
+          <Typography variant="h4" sx={{ color: darkGray, fontWeight: 'bold', marginBottom: '1rem' }}>
+            {groupName}
+          </Typography>
+          <IconButton onClick={() => setIsEdit(true)}>
+            <EditIcon />
+          </IconButton>
+        </>
+      )}
+    </Stack>
+  );
 
   return (
     <Grid container height="100vh">
@@ -143,9 +136,7 @@ const Group = () => {
         }}
       >
         {IconBtns}
-
         {groupName && GroupName}
-
       </Grid>
 
       <Drawer
@@ -153,7 +144,7 @@ const Group = () => {
         onClose={handleMobileClose}
         sx={{ display: { xs: 'block', sm: 'none' } }}
       >
-        <GroupList w="80vw" myGroups={sampleChats} chatId={chatId} />
+        <GroupList w="60vw" myGroups={sampleChats} chatId={chatId} />
       </Drawer>
     </Grid>
   );
@@ -163,7 +154,9 @@ const GroupList = ({ w = '100%', myGroups = [], chatId }) => {
   return (
     <Stack width={w} spacing="1rem">
       {myGroups.length > 0 ? (
-        myGroups.map(myGroup => <GroupListItem key={myGroup._id} group={myGroup} chatId={chatId} />)
+        myGroups.map(myGroup => (
+          <GroupListItem key={myGroup._id} group={myGroup} chatId={chatId} />
+        ))
       ) : (
         <Typography variant="h6" sx={{ textAlign: 'center', padding: '1rem', color: darkGray }}>
           No Groups

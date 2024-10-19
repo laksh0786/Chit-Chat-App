@@ -8,7 +8,9 @@ const AvatarCard = ({ avatar = [], max = 4 }) => {
     return (
         <Stack direction={"row"} spacing={0.5}>
 
-            <AvatarGroup max={max}>
+            <AvatarGroup max={max} sx={{
+                position: "relative",
+            }}>
 
                 <Box sx={{
                     width: "5rem",

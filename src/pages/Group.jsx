@@ -1,25 +1,33 @@
-import React, { memo, useEffect, useState } from 'react';
-import { matteBlack, lightGray, lightBlue as primaryColor, darkGray } from '../constants/color';
+import React, { lazy, memo, Suspense, useEffect, useState } from 'react';
+import { matteBlack, lightGray, lightBlue as primaryColor, darkGray, lightBlue, orange } from '../constants/color';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AvatarCard from '../components/shared/Avatarcard';
-import { sampleChats } from '../constants/sampleData';
+import { sampleChats, sampleUsers } from '../constants/sampleData';
 import { Link } from '../components/styles/StyledComponents';
-import { Done as DoneIcon, Edit as EditIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material';
-import { Box, Drawer, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Add as AddIcon, Delete as DeleteIcon, Done as DoneIcon, Edit as EditIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material';
+import { Backdrop, Box, Button, ButtonGroup, Drawer, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import UserItem from '../components/shared/UserItem';
+import shadows from '@mui/material/styles/shadows';
+
+const ConfirmDeleteDialog = lazy(() => import('../components/dialog/ConfirmDeleteDialog'));
+const AddMemberDialog = lazy(() => import('../components/dialog/AddMemberDialog'));
 
 const Group = () => {
-  
+
   const navigate = useNavigate();
+  const isAddMember = false;
+
 
   // Get chatId from URL
   const chatId = useSearchParams()[0].get('group');
-  console.log(chatId);
+  // console.log(chatId);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [groupNameUpdated, setGroupNameUpdated] = useState('');
+  const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
 
   const navigateBack = () => navigate('/');
 
@@ -32,10 +40,40 @@ const Group = () => {
     setIsEdit(false);
   };
 
+  // Add Member Handler
+  const openAddMemberHandler = () => {
+    console.log("Add Member");
+  };
+
+  // opening the confirm delete dialog
+  const openconfirmDeleteHandler = () => {
+    setConfirmDeleteDialog(true);
+  };
+
+  //closing the confirm delete dialog
+  const closeConfirmDeleteHandler = () => {
+    setConfirmDeleteDialog(false);
+  }
+
+  // Delete Member Handler
+  const deleteHandler = () => {
+    console.log("Delete Group");
+    closeConfirmDeleteHandler();
+  };
+
+
+  // Remove Member Handler
+  const removeMemberHandler = (id) => {
+    console.log("Remove Member", id);
+  };
+
   // Get group name
   useEffect(() => {
-    setGroupName(`Group ${chatId}`);
-    setGroupNameUpdated(`Group ${chatId}`);
+
+    if (chatId) {
+      setGroupName(`Group ${chatId}`);
+      setGroupNameUpdated(`Group ${chatId}`);
+    }
 
     // Clean the values if the chatId (chat group) changes
     return () => {
@@ -86,10 +124,17 @@ const Group = () => {
     <Stack direction={"row"} alignItems={"center"} justifyContent={"center"} spacing={"1rem"} padding={"2rem"}>
       {isEdit ? (
         <>
-          <TextField 
+          <TextField
             label="Group Name"
             value={groupNameUpdated}
-            onChange={(e) => setGroupNameUpdated(e.target.value)} 
+            onChange={(e) => setGroupNameUpdated(e.target.value)}
+            sx={{
+              margin: "1rem",
+              '& .MuiInputBase-root': {
+                bgcolor: lightGray,
+                borderRadius: '1rem',
+              },
+            }}
           />
           <IconButton onClick={updateGroupName}>
             <DoneIcon />
@@ -108,16 +153,49 @@ const Group = () => {
     </Stack>
   );
 
+  // Button Group JSX element
+  const ButtonGroup = (
+    <Stack direction={{
+      xs: 'column-reverse',
+      sm: 'row',
+    }} spacing={"1rem"} p={{ xs: "0", sm: "1rem", md: "1rem 4rem" }}>
+
+      <Button size="large" variant='outlined' color='error' startIcon={<DeleteIcon />} onClick={openconfirmDeleteHandler}>
+        Delete Group
+      </Button>
+
+      <Button size="large" variant='contained' startIcon={<AddIcon />} onClick={openAddMemberHandler}>
+        Add Member
+      </Button>
+
+    </Stack>
+  )
+
   return (
     <Grid container height="100vh">
       <Grid
         size={{ sm: 4 }}
         sx={{
           display: { xs: 'none', sm: 'block' },
-          bgcolor: lightGray,
+          bgcolor: "#d2f8fa",
           height: '100%',
           padding: '1rem',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          overflow: 'auto',
+          '&::-webkit-scrollbar': {
+            width: '8px', // Width of the scrollbar
+          },
+          '&::-webkit-scrollbar-track': {
+            background: "#d2f8fa", // Background of the scrollbar track
+            borderRadius: '10px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: "rgba(151,231,225)", // Color of the scrollbar thumb
+            borderRadius: '10px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: lightBlue, // Color of the scrollbar thumb on hover
+          },
         }}
       >
         <GroupList myGroups={sampleChats} chatId={chatId} />
@@ -136,13 +214,97 @@ const Group = () => {
         }}
       >
         {IconBtns}
-        {groupName && GroupName}
+        {groupName && <>
+
+          {GroupName}
+
+          <Typography sx={{
+            margin: "1rem 4rem",
+            alignSelf: 'flex-start',
+            color: darkGray,
+            variant: 'body1',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+          }}>
+            Members
+          </Typography>
+
+          <Stack
+            sx={{
+              maxWidth: "40rem",
+              width: "100%",
+              boxSizing: "border-box",
+              padding: {
+                xs: "1rem",
+                sm: "1rem",
+                md: "2rem 4rem",
+              },
+              spacing: "2rem",
+              height: "55vh",
+              overflow: "auto",
+              bgcolor: "rgba(151,231,225 , 0.7)",
+              borderRadius: "1rem",
+              marginBottom: "1rem",
+              '&::-webkit-scrollbar': {
+                width: '8px', // Width of the scrollbar
+              },
+              '&::-webkit-scrollbar-track': {
+                background: "#d2f8fa", // Background of the scrollbar track
+                borderRadius: '10px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: "rgba(151,231,225)", // Color of the scrollbar thumb
+                borderRadius: '10px',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                background: lightBlue, // Color of the scrollbar thumb on hover
+              },
+            }}
+          >
+
+            {/* Member Card */}
+
+            {
+              sampleUsers.map((user) => {
+                return < UserItem user={user} key={user._id} isAdded
+                  styling={{
+                    boxShadow: '0px 0px 0.5rem rgba(0, 0, 0, 0.2)',
+                    padding: "1rem 2rem",
+                    borderRadius: "1rem",
+                    boxShadow: "0 0 0 0",
+                  }}
+                  handler={removeMemberHandler}
+                />
+              })
+            }
+
+          </Stack>
+
+          {ButtonGroup}
+
+        </>}
       </Grid>
+
+      {
+        isAddMember && (
+          <Suspense fallback={<Backdrop open />}>
+            <AddMemberDialog />
+          </Suspense>
+        )
+      }
+
+      {
+        confirmDeleteDialog && (
+          <Suspense fallback={<Backdrop open />}>
+            <ConfirmDeleteDialog open={confirmDeleteDialog} handleClose={closeConfirmDeleteHandler} deleteHandler={deleteHandler} confirmText={"Are you sure you want to delete this gorup?"} />
+          </Suspense>
+        )
+      }
 
       <Drawer
         open={isMobileMenuOpen}
         onClose={handleMobileClose}
-        sx={{ display: { xs: 'block', sm: 'none' } }}
+        sx={{ display: { xs: 'block', sm: 'none' }, bgcolor: "#d2f8fa" }}
       >
         <GroupList w="60vw" myGroups={sampleChats} chatId={chatId} />
       </Drawer>
@@ -152,7 +314,7 @@ const Group = () => {
 
 const GroupList = ({ w = '100%', myGroups = [], chatId }) => {
   return (
-    <Stack width={w} spacing="1rem">
+    <Stack width={w}>
       {myGroups.length > 0 ? (
         myGroups.map(myGroup => (
           <GroupListItem key={myGroup._id} group={myGroup} chatId={chatId} />
@@ -166,6 +328,7 @@ const GroupList = ({ w = '100%', myGroups = [], chatId }) => {
   );
 };
 
+
 const GroupListItem = memo(({ group, chatId }) => {
   const { name, avatar, _id } = group;
 
@@ -177,7 +340,7 @@ const GroupListItem = memo(({ group, chatId }) => {
           e.preventDefault();
         }
       }}
-      style={{ textDecoration: 'none', width: '100%' }}
+      style={{ textDecoration: 'none', width: '100%', padding: "0.6rem" }}
     >
       <Stack
         direction="row"

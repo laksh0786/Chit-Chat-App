@@ -8,6 +8,7 @@ import { DoughnutChart, LineChart } from '../../components/specific/Charts'
 
 
 
+
 const Dashboard = () => {
 
   // AppBar JSX element for search 
@@ -90,7 +91,7 @@ const Dashboard = () => {
             padding: "2rem 3.5rem",
             borderRadius: "1rem",
             width: "100%",
-            maxWidth: "50rem",
+            maxWidth: "45rem",
           }}>
 
             <Typography  sx={{ margin:"0 0 1rem  0" , fontSize:"1.8rem"}}  variant='h4'>Last messages</Typography>

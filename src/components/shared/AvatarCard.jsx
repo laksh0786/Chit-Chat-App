@@ -29,7 +29,7 @@ const AvatarCard = ({ avatar = [], max = 4 }) => {
                                         position:"absolute",
                                         left:{
                                             xs:`${0.5+index}rem`,
-                                            sm:`${1+index}rem`
+                                            sm:`${index}rem`
                                         }
                                     }}
                                 />

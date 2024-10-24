@@ -3,15 +3,15 @@ import { Link as RouterLink } from 'react-router-dom';
 import { grayColor } from '../../constants/color';
 
 export const VisuallyHiddenInput = styled('input')({
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    padding: 0,
-    margin: -1,
-    overflow: 'hidden',
-    clip: 'rect(0,0,0,0)',
-    whiteSpace: 'nowrap',
-    border: 0
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: 'hidden',
+  clip: 'rect(0,0,0,0)',
+  whiteSpace: 'nowrap',
+  border: 0
 })
 
 export const Link = styled(RouterLink)`
@@ -39,3 +39,40 @@ export const InputBox = styled("input")`
     // outline: none;
   }
 `;
+
+
+export const SearchField = styled("input")`
+  padding: 1rem 2rem;
+  border-radius: 1.8rem;
+  width: 100%; // Full width for mobile, will be adjusted in AppBar
+  max-width: 20rem;
+  border: none;
+  outline: none;
+  background-color: #f1f1f1;
+  box-shadow: inset 1px 2px 6px rgba(0, 0, 0, 0.2);
+  font-size: 1.1rem;
+`
+
+export const CurveButton = styled("button")`
+  padding: 0.8rem 2rem;
+  border-radius: 1.8rem;
+  border: none;
+  outline: none;
+  background-color: #f1f1f1;
+  box-shadow: inset 1px 2px 6px rgba(0, 0, 0, 0.2);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: rgba(0,0,0,0.7);
+
+  :hover {
+    background-color: #f7f7f7;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 0.8rem 1rem;
+  }
+
+`
+

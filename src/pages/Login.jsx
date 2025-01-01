@@ -87,15 +87,40 @@ const Login = () => {
         }))
     }
 
-    const handleSignupSubmit = (e) => {
+    const handleSignupSubmit = async (e) => {
         e.preventDefault();
 
         if (validationError.email || validationError.password || validationError.fullName) {
+            toast.error("Please fill all the fields correctly");
             return;
         }
 
-        console.log(registerData);
-        
+        const formData = new FormData();
+
+        for (let key in registerData) {
+            formData.append(key, registerData[key]);
+        }
+
+        try{
+
+            const config = {
+                withCredentials: true,
+                headers:{
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+
+            const {data} = axios.post(`${server}${userRegister}` , formData , config);
+
+            dispatch(userExists(true));
+
+            toast.success(data.message);
+
+        } catch(err){
+            
+            // console.log(err);
+            toast.error(err?.response?.data?.message || "Something went wrong");
+        }
     }
 
     const handleLoginSubmit = async (e) => {
@@ -126,7 +151,7 @@ const Login = () => {
 
         } catch(err){
 
-            console.log(err);
+            // console.log(err);
             toast.error(err?.response?.data?.message || "Something went wrong" );
         }
 

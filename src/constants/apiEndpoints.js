@@ -3,4 +3,4 @@ const userLogin = '/api/v1/user/login';
 const userRegister = '/api/v1/user/new';
 
 
-export { getMyProfile, userLogin };
+export { getMyProfile, userLogin, userRegister };

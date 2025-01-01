@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { userExists } from '../redux/slices/auth';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { userLogin } from '../constants/apiEndpoints';
+import { userLogin, userRegister } from '../constants/apiEndpoints';
 
 //variant prop is used to change the style of the textfield
 //component prop is used to change the semantic element of the textfield 
@@ -24,7 +24,7 @@ const Login = () => {
     const [validationError, setValidationError] = useState({
         email: "",
         password: "",
-        fullName: ""
+        name: ""
     });
 
     const registerToggleHandler = () => {
@@ -40,7 +40,7 @@ const Login = () => {
         email: "",
         password: "",
         bio: "",
-        fullName: "",
+        name: "",
         avatar: "",
     })
 
@@ -90,7 +90,7 @@ const Login = () => {
     const handleSignupSubmit = async (e) => {
         e.preventDefault();
 
-        if (validationError.email || validationError.password || validationError.fullName) {
+        if (validationError.email || validationError.password || validationError.name) {
             toast.error("Please fill all the fields correctly");
             return;
         }
@@ -110,7 +110,8 @@ const Login = () => {
                 }
             }
 
-            const {data} = axios.post(`${server}${userRegister}` , formData , config);
+            const {data} = await axios.post(`${server}${userRegister}` , formData , config);
+            console.log(data);
 
             dispatch(userExists(true));
 
@@ -118,7 +119,7 @@ const Login = () => {
 
         } catch(err){
             
-            // console.log(err);
+            console.log(err);
             toast.error(err?.response?.data?.message || "Something went wrong");
         }
     }
@@ -303,17 +304,17 @@ const Login = () => {
                                         label="Full Name"
                                         variant='outlined'
                                         margin='normal'
-                                        name="fullName"
-                                        value={registerData.fullName}
+                                        name="name"
+                                        value={registerData.name}
                                         onChange={changeRegisterDataHandler}
                                     />
                                     {
-                                        validationError.fullName && (
+                                        validationError.name && (
                                             <Typography
                                                 variant='caption'
                                                 color='error'
                                             >
-                                                {validationError.fullName}
+                                                {validationError.name}
                                             </Typography>
                                         )
                                     }

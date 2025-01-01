@@ -3,6 +3,12 @@ import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Tooltip
 import React, { useState } from 'react'
 import { VisuallyHiddenInput } from '../components/styles/StyledComponents';
 import { dataValidator } from '../utils/validators';
+import { server } from '../constants/config';
+import { useDispatch } from 'react-redux';
+import { userExists } from '../redux/slices/auth';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { userLogin } from '../constants/apiEndpoints';
 
 //variant prop is used to change the style of the textfield
 //component prop is used to change the semantic element of the textfield 
@@ -11,6 +17,8 @@ import { dataValidator } from '../utils/validators';
 
 
 const Login = () => {
+
+    const dispatch = useDispatch();
 
     const [isLogin, setIsLogin] = useState(true);
     const [validationError, setValidationError] = useState({
@@ -87,14 +95,41 @@ const Login = () => {
         }
 
         console.log(registerData);
+        
     }
 
-    const handleLoginSubmit = (e) => {
+    const handleLoginSubmit = async (e) => {
+        
         e.preventDefault();
+
         if (validationError.email || validationError.password) {
+            toast.error("Please fill all the fields correctly");
             return;
         }
-        console.log(loginData);
+        
+        const config = {
+            withCredentials: true,
+            headers:{
+                "Content-Type": "application/json"
+            }
+        };
+
+        try{
+
+            const {data} = await axios.post(`${server}${userLogin}` , loginData , config)
+
+            console.log(data);
+
+            dispatch(userExists(true));
+
+            toast.success(data.message);
+
+        } catch(err){
+
+            console.log(err);
+            toast.error(err?.response?.data?.message || "Something went wrong" );
+        }
+
     }
 
     return (

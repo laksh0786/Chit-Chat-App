@@ -9,6 +9,7 @@ import { userExists } from '../redux/slices/auth';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { userLogin, userRegister } from '../constants/apiEndpoints';
+import {useFileHandler} from '6pp'
 
 //variant prop is used to change the style of the textfield
 //component prop is used to change the semantic element of the textfield 
@@ -27,6 +28,8 @@ const Login = () => {
         name: ""
     });
 
+    const avatar = useFileHandler("single");
+
     const registerToggleHandler = () => {
         setIsLogin(((prev) => !prev));
     }
@@ -41,21 +44,8 @@ const Login = () => {
         password: "",
         bio: "",
         name: "",
-        avatar: "",
     })
 
-    const changeFileHander = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        // console.log(reader);
-        reader.onload = () => {
-            setRegisterData((prev) => ({
-                ...prev,
-                avatar: reader.result
-            }))
-        }
-    }
 
     const changeLoginDataHandler = (e) => {
 
@@ -80,7 +70,7 @@ const Login = () => {
             ...prev,
             [name]: dataValidator(value, name)
         }))
-
+        console.log()
         setRegisterData((prev) => ({
             ...prev,
             [name]: value
@@ -95,11 +85,15 @@ const Login = () => {
             return;
         }
 
+        console.log(registerData);
+
         const formData = new FormData();
 
         for (let key in registerData) {
             formData.append(key, registerData[key]);
         }
+
+        formData.append("avatar", avatar.file);
 
         try{
 
@@ -274,7 +268,7 @@ const Login = () => {
                                                 height: "9rem",
                                                 objectFit: "contain",
                                             }}
-                                            src={registerData.avatar}
+                                            src={avatar.preview}
                                         />
 
                                         <Tooltip title="Upload Avatar">
@@ -292,7 +286,7 @@ const Login = () => {
                                                 component="label"
                                             >
                                                 <CameraAlt />
-                                                <VisuallyHiddenInput type="file" onChange={changeFileHander} />
+                                                <VisuallyHiddenInput type="file" onChange={avatar.changeHandler} />
                                             </IconButton>
                                         </Tooltip>
 

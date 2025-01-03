@@ -36,7 +36,10 @@ const App = () => {
     // console.log(server)
 
     //fetching the user profile
-    axios.get(`${server}${getMyProfile}`)
+
+    //we have to withCredentials to true to send the cookies
+    //cookies are automatically sent by the browser when we set the withCredentials to true
+    axios.get(`${server}${getMyProfile}`, {withCredentials:true})
       .then((res) => {
         console.log(res);
       })

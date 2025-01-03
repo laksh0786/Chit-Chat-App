@@ -6,7 +6,7 @@ import { server } from './constants/config';
 import { getMyProfile } from './constants/apiEndpoints';
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
-import {userNotExists} from "./redux/slices/auth";
+import {userExists, userNotExists} from "./redux/slices/auth";
 import {Toaster} from 'react-hot-toast';
 
 
@@ -40,8 +40,8 @@ const App = () => {
     //we have to withCredentials to true to send the cookies
     //cookies are automatically sent by the browser when we set the withCredentials to true
     axios.get(`${server}${getMyProfile}`, {withCredentials:true})
-      .then((res) => {
-        console.log(res);
+      .then(({data}) => {
+        dispatch(userExists(data.user));
       })
       .catch((err) => {
         dispatch(userNotExists());

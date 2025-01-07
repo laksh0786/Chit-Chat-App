@@ -21,7 +21,7 @@ const api = createApi({
     }),
 
     //in rtk query data is cached by default and on updating the data the data is not updated so we provide tagTypes to invalidate the cache. tagTypes is an array of strings that define the types of tags that we want to invalidate when the data is updated. in simple words, when the data is updated, the cache is invalidated and the data is refetched from the API.
-    tagTypes: ["Chat"],
+    tagTypes: ["Chat", "User"],
 
     //the endpoints that we want to fetch data from. We define an endpoint for fetching the data from the API by providing the name of the endpoint and the URL of the endpoint.
     endpoints: (builder) => ({
@@ -37,6 +37,19 @@ const api = createApi({
             //provideTags is an array that helps us to provide tags to particular fetches. In this case, we are providing the "Chat" tag to the fetch so that when the data is updated, the cache is invalidated and the data is refetched from the API. We use invalidateTags to invalidate the cache when the data is updated in the updateChat mutation or Api.
             providesTags: ["Chat"]
 
+        }),
+
+        searchUsers : builder.query({
+
+            query: ({name , page=1})=>{
+                return {
+                    url : `/user/search-user?name=${name}&page=${page}`,
+                    credentials : "include"
+                }
+            },
+
+            providesTags : ["User"]
+
         })
 
     })
@@ -49,4 +62,4 @@ export default api;
 //there are two hook : useMyChatsQuery and UseLazyMyChatsQuery, the difference between them is that useMyChatsQuery will fetch the data from the API when the component is rendered, while UseLazyMyChatsQuery will fetch the data from the API when the fetch function is called or triggered.
 
 
-export const { useMyChatsQuery } = api
+export const { useMyChatsQuery, useLazySearchUsersQuery } = api

@@ -25,6 +25,7 @@ const AppLayout = () => {
             const { isMobileMenu } = useSelector(state => state.misc)
             // console.log(isMobileMenu);
 
+            //by just calling the useMyChatsQuery hook we are fetching the chats not need to call the trigger function
             const { isLoading, data, error, isError, refetch } = useMyChatsQuery("");
             
             useErrors([{isError, error}]);

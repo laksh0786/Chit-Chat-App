@@ -9,7 +9,7 @@ import { useMyChatsQuery } from '../../redux/api/api.rtk'
 import { Drawer, Skeleton } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobileMenu } from '../../redux/slices/misc'
-import useErrors from '../../hooks/useErrors,js'
+import useErrors from '../../hooks/useErrors.js'
 
 //Higher Order Component - it is a function that returns a Component
 const AppLayout = () => {

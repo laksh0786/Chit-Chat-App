@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setIsSearchModalOpen } from '../../redux/slices/misc';
 import { useLazySearchUsersQuery } from '../../redux/api/api.rtk';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const Search = () => {
 
@@ -48,10 +49,10 @@ const Search = () => {
         setTotalPages(data.totalPages);
 
       }).catch((err) => {
-        console.log(err);
+        toast.error(err?.data?.message || "Failed to search users");
       })
 
-    }, 300);
+    }, 400);
 
     //clearing the timeout so that the search query is not triggered multiple times when the user types in the search input field. it will only trigger after the user stops typing after 1 second.
     return () => {
@@ -126,8 +127,9 @@ const Search = () => {
       <Pagination
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          mb: 2,
+          justifyContent: 'end',
+          m: 3,
+          mt: 0,
         }}
         count={totalPages}
         page={page} 

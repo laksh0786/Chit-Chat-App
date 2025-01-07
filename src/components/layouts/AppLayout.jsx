@@ -1,11 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Header from './Header'
 import Title from '../shared/Title'
 import Grid from '@mui/material/Grid2'
 import ChatList from '../specific/ChatList'
-import { sampleChats } from '../../constants/sampleData'
 import { useParams } from 'react-router-dom'
 import Profile from '../specific/Profile'
+import { useMyChatsQuery } from '../../redux/api/api.rtk'
+import { Drawer, Skeleton } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsMobileMenu } from '../../redux/slices/misc'
+import useErrors from '../../hooks/useErrors,js'
 
 //Higher Order Component - it is a function that returns a Component
 const AppLayout = () => {
@@ -16,15 +20,43 @@ const AppLayout = () => {
             const params = useParams();
             const chatId = params.chatId;
 
+            const dispatch = useDispatch();
+
+            const { isMobileMenu } = useSelector(state => state.misc)
+            // console.log(isMobileMenu);
+
+            const { isLoading, data, error, isError, refetch } = useMyChatsQuery("");
+            
+            useErrors([{isError, error}]);
+            
+            console.log(data);
+
             const handleDeleteChat = (e, _id, groupChat) => {
                 e.preventDefault();
                 console.log("Delete Chat", _id, groupChat)
+            }
+
+            const handleMobileMenuClose = () => {
+                dispatch(setIsMobileMenu(false));
             }
 
             return (
                 <>
                     <Title />
                     <Header />
+
+                    {
+                        isLoading ? (<Skeleton />) : (
+                            <Drawer open={isMobileMenu} onClose={handleMobileMenuClose}>
+                                <ChatList
+                                    w="70vw"
+                                    chats={data?.chats}
+                                    chatId={chatId}
+                                    handleDeleteChat={handleDeleteChat}
+                                />
+                            </Drawer>
+                        )
+                    }
 
                     <Grid container height={"calc(100vh - 4rem)"} >
 
@@ -35,11 +67,15 @@ const AppLayout = () => {
                             }}
                             height={"100%"}
                         >
-                            <ChatList
-                                chats={sampleChats}
-                                chatId={chatId}
-                                handleDeleteChat={handleDeleteChat}
-                            />
+                            {
+                                isLoading ? (<Skeleton />) : (
+                                    <ChatList
+                                        chats={data?.chats}
+                                        chatId={chatId}
+                                        handleDeleteChat={handleDeleteChat}
+                                    />
+                                )
+                            }
                         </Grid>
 
 
@@ -52,7 +88,7 @@ const AppLayout = () => {
                             height={"100%"}
                             sx={{
                                 display: { xs: "none", md: "block" },
-                                padding:"2rem",
+                                padding: "2rem",
                                 backgroundColor: "rgba(0,0,0,0.85)"
                             }} >
 

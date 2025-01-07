@@ -15,7 +15,7 @@ const ChatList = ({
     handleDeleteChat
 }) => {
     return (
-        <Stack w={w} direction={"column"} spacing={2} padding={2} sx={{
+        <Stack width={w} direction={"column"} spacing={2} padding={2} sx={{
             overflowY: "auto",
             height: "calc(100%)",
             '&::-webkit-scrollbar': {

@@ -47,7 +47,7 @@ const App = () => {
         dispatch(userNotExists());
       })
 
-  }, [])
+  }, []) //we added dispatch to the dependency array to remove the warning
 
   return isLoading ? <LayoutLoader/> : (
 

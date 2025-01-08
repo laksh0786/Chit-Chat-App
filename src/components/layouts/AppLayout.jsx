@@ -23,6 +23,7 @@ const AppLayout = () => {
             const dispatch = useDispatch();
 
             const { isMobileMenu } = useSelector(state => state.misc)
+            const { user } = useSelector(state => state.auth)
             // console.log(isMobileMenu);
 
             //by just calling the useMyChatsQuery hook we are fetching the chats not need to call the trigger function
@@ -93,7 +94,7 @@ const AppLayout = () => {
                                 backgroundColor: "rgba(0,0,0,0.85)"
                             }} >
 
-                            <Profile />
+                            <Profile user={user}/>
 
                         </Grid>
 

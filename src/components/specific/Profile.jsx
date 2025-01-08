@@ -2,13 +2,15 @@ import { Avatar, Stack, Typography } from '@mui/material'
 import React from 'react'
 import {Face as FaceIcon , AlternateEmail as UserIcon , CalendarMonth as CalenderIcon} from "@mui/icons-material"
 import moment from 'moment'
+import { transformImage } from '../../lib/feature'
 
-const Profile = () => {
+const Profile = ({ user }) => {
     return (
         <Stack spacing={"2rem"} sx={{
             alignItems: "center",
         }}>
             <Avatar
+                src={transformImage(user?.avatar?.url)}
                 sx={{
                     width: 200,
                     height: 200,
@@ -17,10 +19,10 @@ const Profile = () => {
                     border: "5px solid white"
                 }}
             />
-            <ProfileCard heading="Bio" text="Hey there I am using Chit Chat App" />
-            <ProfileCard heading="Username" text="laksh0786" Icon={<UserIcon/>}/>
-            <ProfileCard heading="Name" text="Lakshay Bansal" Icon={<FaceIcon/>}/>
-            <ProfileCard heading="Joined" text={moment('2024-09-03T04:53:23.230Z').fromNow()} Icon={<CalenderIcon/>}/>
+            <ProfileCard heading="Bio" text={user?.bio} />
+            <ProfileCard heading="Username" text={user?.email} Icon={<UserIcon/>}/>
+            <ProfileCard heading="Name" text={user?.name} Icon={<FaceIcon/>}/>
+            <ProfileCard heading="Joined" text={moment(user?.createdAt).fromNow()} Icon={<CalenderIcon/>}/>
         </Stack>
     )
 }

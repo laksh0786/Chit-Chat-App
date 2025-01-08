@@ -39,16 +39,33 @@ const api = createApi({
 
         }),
 
-        searchUsers : builder.query({
+        //search users endpoint to search users by name and includes pagination
+        searchUsers: builder.query({
 
-            query: ({name , page=1})=>{
+            query: ({ name, page = 1 }) => {
                 return {
-                    url : `/user/search-user?name=${name}&page=${page}`,
-                    credentials : "include"
+                    url: `/user/search-user?name=${name}&page=${page}`,
+                    credentials: "include"
                 }
             },
 
-            providesTags : ["User"]
+            providesTags: ["User"]
+
+        }),
+
+
+        //send friend request mutation to send a friend request to a user
+        sendFriendRequest: builder.mutation({
+            query: (data) => {
+                return {
+                    url: "/user/send-friend-request",
+                    method: "PUT",
+                    credentials: "include",
+                    body: data
+                }
+            },
+
+            invalidatesTags: ["User"]
 
         })
 
@@ -62,4 +79,4 @@ export default api;
 //there are two hook : useMyChatsQuery and UseLazyMyChatsQuery, the difference between them is that useMyChatsQuery will fetch the data from the API when the component is rendered, while UseLazyMyChatsQuery will fetch the data from the API when the fetch function is called or triggered.
 
 
-export const { useMyChatsQuery, useLazySearchUsersQuery } = api
+export const { useMyChatsQuery, useLazySearchUsersQuery, useSendFriendRequestMutation } = api

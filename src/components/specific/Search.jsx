@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { useInputValidation } from '6pp';
 import { Search as SearchIcon } from '@mui/icons-material';
 import UserItem from '../shared/UserItem';
-import { sampleUsers } from '../../constants/sampleData';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsSearchModalOpen } from '../../redux/slices/misc';
-import { useLazySearchUsersQuery } from '../../redux/api/api.rtk';
+import { useLazySearchUsersQuery, useSendFriendRequestMutation } from '../../redux/api/api.rtk';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
+import useAsyncMutation from '../../hooks/useAsyncMutation';
 
 const Search = () => {
 
@@ -20,6 +20,10 @@ const Search = () => {
   //we get the trigger function from the hook to trigger the search query only then we get the data otherwise the data is not fetched
   const [searchUserTrigger] = useLazySearchUsersQuery();
 
+
+  //add friend request mutation
+  const [sendFriendRequestMutateHandler, isLoadingSendFriendRequest] = useAsyncMutation(useSendFriendRequestMutation);
+
   //search input field handling and validation using 6pp module useInputValidation
   const search = useInputValidation("");
 
@@ -27,10 +31,11 @@ const Search = () => {
 
   const dispatch = useDispatch();
 
-  let isLoadingSendFriendRequest = false;
+  const addFriendHandler = async (id) => {
 
-  const addFriendHandler = (id) => {
-    console.log('Add Friend', id);
+    // console.log(id);
+    await sendFriendRequestMutateHandler("Sending friend request...", { userId: id });
+
   };
 
   const closeSearchModalHandler = () => {
@@ -43,7 +48,7 @@ const Search = () => {
     //this concept is called debouncing which means that the search query is triggered after a certain time interval using the setTimeout function.
     const timeoutId = setTimeout(() => {
 
-      searchUserTrigger({name:search.value , page}).then(({ data, totalPages }) => {
+      searchUserTrigger({ name: search.value, page }).then(({ data }) => {
 
         setUsers(data.users);
         setTotalPages(data.totalPages);
@@ -88,7 +93,7 @@ const Search = () => {
         <TextField
           label=""
           value={search.value}
-          onChange={(e)=>{
+          onChange={(e) => {
             search.changeHandler(e);
             setPage(1);
           }}
@@ -132,7 +137,7 @@ const Search = () => {
           mt: 0,
         }}
         count={totalPages}
-        page={page} 
+        page={page}
         variant="outlined" color="primary"
         onChange={(e, pageNo) => {
           // console.log(pageNo);

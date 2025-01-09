@@ -10,6 +10,7 @@ import { Drawer, Skeleton } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobileMenu } from '../../redux/slices/misc'
 import useErrors from '../../hooks/useErrors.js'
+import { getSocket } from '../../socket.jsx'
 
 //Higher Order Component - it is a function that returns a Component
 const AppLayout = () => {
@@ -19,6 +20,10 @@ const AppLayout = () => {
 
             const params = useParams();
             const chatId = params.chatId;
+
+            const socket = getSocket();
+            
+            console.log(socket.id);
 
             const dispatch = useDispatch();
 
@@ -31,7 +36,8 @@ const AppLayout = () => {
             
             useErrors([{isError, error}]);
             
-            console.log(data);
+            //printing the chats data fetched using useMyChatsQuery
+            // console.log(data);
 
             const handleDeleteChat = (e, _id, groupChat) => {
                 e.preventDefault();

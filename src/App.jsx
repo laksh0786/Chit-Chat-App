@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import {userExists, userNotExists} from "./redux/slices/auth";
 import {Toaster} from 'react-hot-toast';
+import { SocketProvider } from './socket';
 
 
 //This is lazy loading of components that is used for code splitting which is a performance optimization technique that allows you to load only the required modules on the initial load and then load the rest of the modules on demand.
@@ -54,7 +55,7 @@ const App = () => {
     <Suspense fallback={<LayoutLoader />}>
       <Routes>
 
-        <Route element={<ProtectRoute user={user} />}>
+        <Route element={<SocketProvider><ProtectRoute user={user} /></SocketProvider>}>
           <Route path="/" element={<Home />} />
           <Route path="/chat/:chatId" element={<Chat />} />
           <Route path="/groups" element={<Group />} />

@@ -26,14 +26,15 @@ const ChatItem = ({
             <div style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "1.2rem",
+                witdh: "100%",
+                // gap: "1.2rem",
                 padding: "1rem",
                 backgroundColor: sameSender ? "#282828" : "#ffffff",
                 color: sameSender ? "#ffffff" : "#000000",
                 borderRadius: '8px',
                 boxShadow: sameSender ? '0px 4px 12px rgba(0, 0, 0, 0.1)' : '0px 2px 8px rgba(0, 0, 0, 0.05)',
                 transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
-                position: "relative",
+                // position: "relative",
                 cursor: "pointer",
                 '&:hover': {
                     backgroundColor: '#f5f5f5',
@@ -46,7 +47,9 @@ const ChatItem = ({
 
                 {/* Chat Info */}
                 <Stack direction="column" justifyContent="center" flexGrow={1}>
-                    <Typography variant="subtitle1" fontWeight="bold" noWrap>{name}</Typography>
+                    <Typography variant="subtitle1" fontWeight="bold" sx={{
+                        textWrap: "wrap",
+                    }}>{name}</Typography>
 
                     {newMessageAlert && (
                         <Typography
@@ -55,7 +58,9 @@ const ChatItem = ({
                                 color: "#ff4757",
                                 fontSize: "0.8rem",
                                 fontWeight: "500",
-                            }}>
+                                textWrap: "wrap",
+                            }}
+                        >
                             {newMessageAlert.count} New Message{newMessageAlert.count > 1 ? 's' : ''}
                         </Typography>
                     )}

@@ -16,7 +16,7 @@ import { userLogout } from '../../constants/apiEndpoints'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/slices/auth'
-import { setIsMobileMenu, setIsSearchModalOpen } from '../../redux/slices/misc'
+import { setIsMobileMenu, setIsNotificationModalOpen, setIsSearchModalOpen } from '../../redux/slices/misc'
 
 const SearchDialog = lazy(() => import('../specific/Search'));
 const NotificationsDialog = lazy(() => import('../specific/Notifications'));
@@ -27,10 +27,9 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const {isSearchModalOpen} = useSelector(state=>state.misc)
+    const {isSearchModalOpen, isNotificationModalOpen} = useSelector(state=>state.misc)
 
     const [isNewGroup, setIsNewGroup] = useState(false);
-    const [isNotification, setIsNotification] = useState(false);
 
     const mobileViewHandler = () => {
         // console.log("Mobile View")
@@ -49,7 +48,7 @@ const Header = () => {
 
     const openNotificationHandler = () => {
         // console.log("Notification");
-        setIsNotification(prev => !prev);
+        dispatch(setIsNotificationModalOpen(true));
     }
 
     const navigateToGroupHandler = () => {
@@ -162,7 +161,7 @@ const Header = () => {
             }
 
             {
-                isNotification && (
+                isNotificationModalOpen && (
                     <Suspense fallback={<Backdrop open />}>
                         <NotificationsDialog />
                     </Suspense>

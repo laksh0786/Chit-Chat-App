@@ -67,6 +67,29 @@ const api = createApi({
 
             invalidatesTags: ["User"]
 
+        }),
+
+        getNotifications : builder.query({
+            query: ()=>{
+                return {
+                    url : "/user/notifications",
+                    credentials:"include"
+                }
+            }, 
+            keepUnusedDataFor : 0 //this will remove the data from the cache after 0 seconds i.e no caching
+        }),
+
+        acceptFriendRequest : builder.mutation({
+
+            query : (data)=>{
+                return {
+                    url : "/user/accept-friend-request",
+                    method:'PUT',
+                    credentials:"include",
+                    body:data
+                } 
+            }, 
+            invalidatesTags : ["Chat"]
         })
 
     })
@@ -79,4 +102,4 @@ export default api;
 //there are two hook : useMyChatsQuery and UseLazyMyChatsQuery, the difference between them is that useMyChatsQuery will fetch the data from the API when the component is rendered, while UseLazyMyChatsQuery will fetch the data from the API when the fetch function is called or triggered.
 
 
-export const { useMyChatsQuery, useLazySearchUsersQuery, useSendFriendRequestMutation } = api
+export const { useMyChatsQuery, useLazySearchUsersQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation } = api

@@ -39,7 +39,7 @@ const useAsyncMutation = (mutationHook) => {
         } catch (error) {
 
             // console.log(error);
-            toast.error(error?.data?.message ||"Something went wrong...", {
+            toast.error(error?.message ||"Something went wrong...", {
                 id: toastId
             })
 

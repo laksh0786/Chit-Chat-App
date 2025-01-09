@@ -57,15 +57,30 @@ const Search = () => {
         toast.error(err?.data?.message || "Failed to search users");
       })
 
-    }, 400);
+    }, 300);
 
     //clearing the timeout so that the search query is not triggered multiple times when the user types in the search input field. it will only trigger after the user stops typing after 1 second.
     return () => {
       clearTimeout(timeoutId);
     }
 
-  }, [search.value, page])
+  }, [search.value])
 
+
+  useEffect(() => {
+
+    //No deebounce effect on the page change
+    searchUserTrigger({name : search.value, page})
+    .then(({ data }) => {
+      setUsers(data.users);
+      setTotalPages(data.totalPages);
+    })
+    .catch((err) => {
+      toast.error(err?.data?.message || "Failed to search users");
+    })
+
+
+  }, [page])
 
 
   return (

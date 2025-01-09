@@ -1,15 +1,63 @@
-import { Avatar, Button, Dialog, DialogTitle, ListItem, Stack, Typography } from '@mui/material'
-import React, { memo } from 'react'
+import { Avatar, Button, Dialog, DialogTitle, ListItem, Skeleton, Stack, Typography } from '@mui/material'
+import React, { memo, useEffect } from 'react'
 import { sampleNotifications } from '../../constants/sampleData'
+import { useAcceptFriendRequestMutation, useGetNotificationsQuery } from '../../redux/api/api.rtk'
+import useErrors from "../../hooks/useErrors"
+import { transformImage } from '../../lib/feature'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsNotificationModalOpen } from '../../redux/slices/misc'
+import toast from 'react-hot-toast'
 
 const Notifications = () => {
 
-  const friendRequestHandler = (_id, accept) => {
-    console.log("Friend Request")
+  const dispatch = useDispatch();
+  const {isNotificationModalOpen} = useSelector(state => state.misc)
+
+  const [acceptFriendRequestTrigger] = useAcceptFriendRequestMutation();
+
+  const { isLoading, data, error, isError } = useGetNotificationsQuery();
+
+  //calling useError custom hook to handle errors
+  useErrors([{ error, isError }]);
+
+
+  const friendRequestHandler = async ({_id, accept}) => {
+
+    dispatch(setIsNotificationModalOpen(false));
+
+    try{
+
+      const res = await acceptFriendRequestTrigger({ requestId: _id, accept });
+
+      if(res.data?.success){
+
+        console.log("Socket require here");
+
+        toast.success(res.data.message);
+
+      } else{
+
+        toast.error(res?.error?.data?.message || "Failed to handle your friend request");
+        
+      }
+    } catch(err){
+
+      toast.error(err?.message || "Something went wrong");
+      console.log(err);
+
+    }
+
   }
 
+  const handleNotificationClose = ()=>{
+
+    dispatch(setIsNotificationModalOpen(false));
+
+  }
+
+
   return (
-    <Dialog open>
+    <Dialog open={isNotificationModalOpen} onClose = {handleNotificationClose}>
       <Stack
         direction="column"
         p={{ xs: "1rem", sm: "2rem" }}
@@ -31,11 +79,15 @@ const Notifications = () => {
         </DialogTitle>
 
         {
-          sampleNotifications.length > 0 ?
-            sampleNotifications.map((notification) => (
-              <NotificationsItem key={notification._id} notification={notification} handler={friendRequestHandler} />
-            ))
-            : <Typography sx={{ textAlign: "center" }}>No Notifications</Typography>
+          isLoading ? <Skeleton /> : <>
+            {
+              data?.allRequests?.length > 0 ?
+                data?.allRequests?.map((notification) => (
+                  <NotificationsItem key={notification._id} notification={notification} handler={friendRequestHandler} />
+                ))
+                : <Typography sx={{ textAlign: "center" }}>No Notifications</Typography>
+            }
+          </>
         }
 
       </Stack>
@@ -67,7 +119,7 @@ const NotificationsItem = memo(
       >
         <Stack direction="row" alignItems="center" spacing={2} width="100%">
           <Avatar
-            
+            src={transformImage(avatar)}
             sx={{
               width: 48,
               height: 48,

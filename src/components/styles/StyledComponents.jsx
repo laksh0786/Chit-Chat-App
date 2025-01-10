@@ -2,6 +2,7 @@ import { styled } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom';
 import { grayColor } from '../../constants/color';
 
+//it will return a styled component that will be used just like a normal react component
 export const VisuallyHiddenInput = styled('input')({
   position: 'absolute',
   width: 1,

@@ -69,27 +69,46 @@ const api = createApi({
 
         }),
 
-        getNotifications : builder.query({
-            query: ()=>{
+        getNotifications: builder.query({
+            query: () => {
                 return {
-                    url : "/user/notifications",
-                    credentials:"include"
+                    url: "/user/notifications",
+                    credentials: "include"
                 }
-            }, 
-            keepUnusedDataFor : 0 //this will remove the data from the cache after 0 seconds i.e no caching
+            },
+            keepUnusedDataFor: 0 //this will remove the data from the cache after 0 seconds i.e no caching
         }),
 
-        acceptFriendRequest : builder.mutation({
+        acceptFriendRequest: builder.mutation({
 
-            query : (data)=>{
+            query: (data) => {
                 return {
-                    url : "/user/accept-friend-request",
-                    method:'PUT',
-                    credentials:"include",
-                    body:data
-                } 
-            }, 
-            invalidatesTags : ["Chat"]
+                    url: "/user/accept-friend-request",
+                    method: 'PUT',
+                    credentials: "include",
+                    body: data
+                }
+            },
+            invalidatesTags: ["Chat"]
+        }),
+
+        getChatDetails: builder.query({
+
+            query: ({ chatId, populate = false }) => {
+
+                let url = `/chat/${chatId}`
+
+                if (populate) url += '?populate=true'
+
+                return {
+                    url: url,
+                    credentials: "include"
+                }
+
+            },
+
+            providesTags: ["Chat"]
+
         })
 
     })
@@ -102,4 +121,13 @@ export default api;
 //there are two hook : useMyChatsQuery and UseLazyMyChatsQuery, the difference between them is that useMyChatsQuery will fetch the data from the API when the component is rendered, while UseLazyMyChatsQuery will fetch the data from the API when the fetch function is called or triggered.
 
 
-export const { useMyChatsQuery, useLazySearchUsersQuery, useSendFriendRequestMutation, useGetNotificationsQuery, useAcceptFriendRequestMutation } = api
+export const {
+
+    useMyChatsQuery,
+    useLazySearchUsersQuery,
+    useSendFriendRequestMutation,
+    useGetNotificationsQuery,
+    useAcceptFriendRequestMutation,
+    useGetChatDetailsQuery
+
+} = api

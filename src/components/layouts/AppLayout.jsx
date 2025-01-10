@@ -22,8 +22,8 @@ const AppLayout = () => {
             const chatId = params.chatId;
 
             const socket = getSocket();
-            
-            console.log(socket.id);
+
+            // console.log(socket.id);
 
             const dispatch = useDispatch();
 
@@ -33,9 +33,9 @@ const AppLayout = () => {
 
             //by just calling the useMyChatsQuery hook we are fetching the chats not need to call the trigger function
             const { isLoading, data, error, isError, refetch } = useMyChatsQuery("");
-            
-            useErrors([{isError, error}]);
-            
+
+            useErrors([{ isError, error }]);
+
             //printing the chats data fetched using useMyChatsQuery
             // console.log(data);
 
@@ -88,7 +88,7 @@ const AppLayout = () => {
 
 
                         <Grid size={{ xs: 12, sm: 8, md: 5, lg: 6 }} height={"100%"} >
-                            <WrappedComponent {...props} />
+                            <WrappedComponent {...props} chatId={chatId} />
                         </Grid>
 
                         <Grid
@@ -100,7 +100,7 @@ const AppLayout = () => {
                                 backgroundColor: "rgba(0,0,0,0.85)"
                             }} >
 
-                            <Profile user={user}/>
+                            <Profile user={user} />
 
                         </Grid>
 

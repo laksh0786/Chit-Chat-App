@@ -1,23 +1,84 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AppLayout from '../components/layouts/AppLayout';
-import { IconButton, Stack, Box } from '@mui/material';
+import { IconButton, Stack, Box, Skeleton } from '@mui/material';
 import { grayColor, orange } from '../constants/color';
 import { AttachFile as AttachFileIcon, Send as SendIcon } from '@mui/icons-material';
 import { InputBox } from '../components/styles/StyledComponents';
 import FileMenu from '../components/dialog/FileMenu';
 import { sampleMessages } from '../constants/sampleData';
 import MessageComponent from '../components/shared/MessageComponent';
+import { getSocket } from '../socket';
+import { NEW_MESSAGE } from '../constants/event';
+import { useGetChatDetailsQuery } from '../redux/api/api.rtk';
+import { useSocketEvents } from '../hooks/useSocketEvents';
+import { useSelector } from 'react-redux';
+import useErrors from '../hooks/useErrors';
 
-const sampleUser = {
-  _id: "ndnbdwubqpspokpkds",
-  name: "John Doe",
-}
 
-const Chat = () => {
+const Chat = ({ chatId }) => {
 
   const containerRef = useRef(null);
 
-  return (
+  //getting the user from the redux store
+  const { user } = useSelector(state => state.auth);
+
+  // State to store message input
+  const [message, setMessage] = useState('');
+
+
+  //state to store messages of the chat
+  const [messages, setMessages] = useState([]);
+  // console.log(messages);
+
+
+  // Fetch chat details we use skip when we don't have chatId
+  const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
+
+  const errors = [
+    {
+      isError: chatDetails.isError,
+      error: chatDetails.error
+    },
+  ]
+
+  useErrors(errors);
+
+  const members = chatDetails?.data?.chat?.members;
+
+  const socket = getSocket();
+
+  const submitMessageHandler = (e) => {
+
+    e.preventDefault();
+
+    if (!message.trim()) return;  // Prevent sending empty message
+
+    // Emit the message to the server
+    socket.emit(NEW_MESSAGE, {
+      chatId, members, message
+    });
+
+    setMessage('');
+
+  }
+
+  // New message handler - wrapped in useCallback to prevent re-rendering
+  //it is used to update the messages array when a new message is received
+  const newMessageHandler = useCallback((data) => {
+    setMessages(prev => [...prev, data.message])
+  }, [])
+
+
+  // Event handlers object
+  const eventHandler = {
+    [NEW_MESSAGE]: newMessageHandler,
+  }
+
+  // Handle socket events using custom hook
+  useSocketEvents(socket, eventHandler);
+
+
+  return chatDetails.isLoading ? <Skeleton /> : (
     <>
 
       <Stack ref={containerRef} height={"90%"} spacing={"1.5rem"} sx={{
@@ -32,16 +93,16 @@ const Chat = () => {
 
         {/* Messages */}
         {
-          sampleMessages.map((i) => {
+          messages.map((i) => {
             return (
-              <MessageComponent key={i._id} message={i} user={sampleUser} />
+              <MessageComponent key={i._id} message={i} user={user} />
             )
           })
         }
 
       </Stack>
 
-      <form className='h-[10%]'>
+      <form className='h-[10%]' onSubmit={submitMessageHandler}>
         <Stack direction={"row"} className='h-full p-4 items-center relative' sx={{
           borderRadius: '1rem',
           borderTopLeftRadius: '0',
@@ -67,17 +128,21 @@ const Chat = () => {
           </IconButton>
 
           {/* Input Box */}
-          <InputBox placeholder='Type your message here....' sx={{
-            padding: '1rem 4rem',
-            borderRadius: '1.5rem',
-            border: '1px solid #ddd',
-            boxShadow: 'inset 0 2px 6px rgba(0, 0, 0, 0.05)',
-            transition: '0.2s ease',
-            '&:focus': {
-              borderColor: orange,
-              boxShadow: 'inset 0 4px 12px rgba(0, 0, 0, 0.1)',
-            }
-          }} />
+          <InputBox
+            placeholder='Type your message here....'
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            sx={{
+              padding: '1rem 4rem',
+              borderRadius: '1.5rem',
+              border: '1px solid #ddd',
+              boxShadow: 'inset 0 2px 6px rgba(0, 0, 0, 0.05)',
+              transition: '0.2s ease',
+              '&:focus': {
+                borderColor: orange,
+                boxShadow: 'inset 0 4px 12px rgba(0, 0, 0, 0.1)',
+              }
+            }} />
 
           {/* Enhanced Send Button */}
           <IconButton type='submit' sx={{

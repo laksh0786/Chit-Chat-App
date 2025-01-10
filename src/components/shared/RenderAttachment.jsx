@@ -12,7 +12,7 @@ const RenderAttachment = ({file, url}) => {
         case "image":
             return <img src={transformImage(url, 200)} alt="attachment" width="150px" height={"150px"} style={{
                 objectFit: "contain",
-                borderRadius: "1rem",
+                // borderRadius: "1rem",
             }} />
 
         case "audio":

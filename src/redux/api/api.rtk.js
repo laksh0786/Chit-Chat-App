@@ -21,7 +21,7 @@ const api = createApi({
     }),
 
     //in rtk query data is cached by default and on updating the data the data is not updated so we provide tagTypes to invalidate the cache. tagTypes is an array of strings that define the types of tags that we want to invalidate when the data is updated. in simple words, when the data is updated, the cache is invalidated and the data is refetched from the API.
-    tagTypes: ["Chat", "User"],
+    tagTypes: ["Chat", "User", "Message"],
 
     //the endpoints that we want to fetch data from. We define an endpoint for fetching the data from the API by providing the name of the endpoint and the URL of the endpoint.
     endpoints: (builder) => ({
@@ -109,6 +109,28 @@ const api = createApi({
 
             providesTags: ["Chat"]
 
+        }),
+
+        getChatMessages: builder.query({
+
+            query:({chatId , page})=>({
+                url:`/chat/messages/${chatId}?page=${page}`,
+                credentials:"include"
+            }),
+            providesTags:["Message"]
+        }),
+
+        sendAttachments : builder.mutation({
+            
+            query:(data)=>{
+                return ({
+                    url:'/chat/send-attachments',
+                    method:'POST',
+                    credentials:"include",
+                    body:data
+                })
+            }
+
         })
 
     })
@@ -128,6 +150,8 @@ export const {
     useSendFriendRequestMutation,
     useGetNotificationsQuery,
     useAcceptFriendRequestMutation,
-    useGetChatDetailsQuery
+    useGetChatDetailsQuery,
+    useGetChatMessagesQuery,
+    useSendAttachmentsMutation
 
 } = api

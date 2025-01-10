@@ -5,48 +5,75 @@ import { grayColor, orange } from '../constants/color';
 import { AttachFile as AttachFileIcon, Send as SendIcon } from '@mui/icons-material';
 import { InputBox } from '../components/styles/StyledComponents';
 import FileMenu from '../components/dialog/FileMenu';
-import { sampleMessages } from '../constants/sampleData';
 import MessageComponent from '../components/shared/MessageComponent';
 import { getSocket } from '../socket';
 import { NEW_MESSAGE } from '../constants/event';
-import { useGetChatDetailsQuery } from '../redux/api/api.rtk';
+import { useGetChatDetailsQuery, useGetChatMessagesQuery } from '../redux/api/api.rtk';
 import { useSocketEvents } from '../hooks/useSocketEvents';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useErrors from '../hooks/useErrors';
+import { useInfiniteScrollTop } from "6pp";
+import { setIsFileMenuOpen } from '../redux/slices/misc';
 
 
 const Chat = ({ chatId }) => {
 
   const containerRef = useRef(null);
+  const socket = getSocket();
+  const dispatch = useDispatch();
 
   //getting the user from the redux store
   const { user } = useSelector(state => state.auth);
 
   // State to store message input
   const [message, setMessage] = useState('');
-
-
   //state to store messages of the chat
   const [messages, setMessages] = useState([]);
-  // console.log(messages);
+  const [page, setPage] = useState(1);
+  const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
 
   // Fetch chat details we use skip when we don't have chatId
   const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
+  const members = chatDetails?.data?.chat?.members;
+
+  //getting the old messages of the chat
+  const oldMessagesChunk = useGetChatMessagesQuery({ chatId, page });
+
+
+  // Infinite Scroll Top
+  const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
+    containerRef,
+    oldMessagesChunk?.data?.totalPages,
+    page,  //when page state changes it will trigger the fetch function useGetChatMessagesQuery
+    setPage,
+    oldMessagesChunk?.data?.messages //the data fetched from the useGetChatMessagesQuery will be added to the oldMessages state or data state
+  )
+
 
   const errors = [
     {
       isError: chatDetails.isError,
       error: chatDetails.error
     },
+    {
+      isError: oldMessagesChunk.isError,
+      error: oldMessagesChunk.error
+    }
   ]
 
   useErrors(errors);
 
-  const members = chatDetails?.data?.chat?.members;
+  
 
-  const socket = getSocket();
+  // Function to open file menu
+  const handleFileOpen = (e) => {
+    dispatch(setIsFileMenuOpen(true));
+    //setting the anchor element to the current target that means its position will be at the current target
+    setFileMenuAnchor(e.currentTarget);
+  }
 
+  //sending the message to the backend handler
   const submitMessageHandler = (e) => {
 
     e.preventDefault();
@@ -78,9 +105,14 @@ const Chat = ({ chatId }) => {
   useSocketEvents(socket, eventHandler);
 
 
+  //combiniing all messages latest and the one got from the backend
+  const allMessages = [...oldMessages, ...messages];
+
+
   return chatDetails.isLoading ? <Skeleton /> : (
     <>
 
+      {/* Messages Container */}
       <Stack ref={containerRef} height={"90%"} spacing={"1.5rem"} sx={{
         boxSizing: 'border-box',
         padding: '1.5rem',
@@ -93,7 +125,7 @@ const Chat = ({ chatId }) => {
 
         {/* Messages */}
         {
-          messages.map((i) => {
+          allMessages.map((i) => {
             return (
               <MessageComponent key={i._id} message={i} user={user} />
             )
@@ -102,6 +134,7 @@ const Chat = ({ chatId }) => {
 
       </Stack>
 
+      {/* Message Input Area */}
       <form className='h-[10%]' onSubmit={submitMessageHandler}>
         <Stack direction={"row"} className='h-full p-4 items-center relative' sx={{
           borderRadius: '1rem',
@@ -112,18 +145,20 @@ const Chat = ({ chatId }) => {
         }}>
 
           {/* Attach File Icon */}
-          <IconButton sx={{
-            position: 'absolute',
-            left: '1.1rem',
-            rotate: '45deg',
-            bgcolor: '#f5f5f5',
-            borderRadius: '50%',
-            padding: '0.5rem',
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-            '&:hover': {
-              bgcolor: '#e0e0e0',
-            }
-          }}>
+          <IconButton
+            onClick={handleFileOpen}
+            sx={{
+              position: 'absolute',
+              left: '1.1rem',
+              rotate: '45deg',
+              bgcolor: '#f5f5f5',
+              borderRadius: '50%',
+              padding: '0.5rem',
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                bgcolor: '#e0e0e0',
+              }
+            }}>
             <AttachFileIcon />
           </IconButton>
 
@@ -144,7 +179,7 @@ const Chat = ({ chatId }) => {
               }
             }} />
 
-          {/* Enhanced Send Button */}
+          {/* Send Button */}
           <IconButton type='submit' sx={{
             rotate: '-35deg',
             background: `linear-gradient(-90deg, ${orange}, #ff914d)`,
@@ -165,7 +200,7 @@ const Chat = ({ chatId }) => {
 
       </form>
 
-      <FileMenu />
+      <FileMenu anchorEl={fileMenuAnchor} chatId={chatId}/>
 
     </>
   )

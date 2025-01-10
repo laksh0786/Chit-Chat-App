@@ -52,15 +52,6 @@ const MessageComponent = ({ message, user }) => {
                     {sender.name}
                 </Typography>}
 
-                {/* Message Content */}
-                {content && <Typography sx={{
-                    wordWrap: 'break-word',
-                    marginTop: sameSender ? 0 : '0.25rem',
-                }}>
-                    {content}
-                </Typography>}
-
-
                 {
                     // Attachments
                     attachments.length > 0 && (
@@ -80,6 +71,14 @@ const MessageComponent = ({ message, user }) => {
                         })
                     )
                 }
+
+                {/* Message Content */}
+                {content && <Typography sx={{
+                    wordWrap: 'break-word',
+                    marginTop: sameSender ? 0 : '0.25rem',
+                }}>
+                    {content}
+                </Typography>}
 
 
                 {/* Timestamp */}

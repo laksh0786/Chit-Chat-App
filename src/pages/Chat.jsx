@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useErrors from '../hooks/useErrors';
 import { useInfiniteScrollTop } from "6pp";
 import { setIsFileMenuOpen } from '../redux/slices/misc';
+import { removeMessageAlert } from '../redux/slices/chat';
 
 
 const Chat = ({ chatId }) => {
@@ -64,7 +65,7 @@ const Chat = ({ chatId }) => {
 
   useErrors(errors);
 
-  
+
 
   // Function to open file menu
   const handleFileOpen = (e) => {
@@ -89,11 +90,32 @@ const Chat = ({ chatId }) => {
 
   }
 
+  useEffect(() => {
+
+    //to remove the message alert when the user enters the chat or the chat is opened
+    dispatch(removeMessageAlert(chatId));
+
+    //we have to return a function from the useEffect to cleanup the state
+    //if we write outside cleanup function then it will be called on intial render also.
+    //so to prevent that we have to write the cleanup function inside the useEffect and on unmount or when dependencies change it will be called
+    return () => {
+      setMessages([]);
+      setMessage("");
+      setPage(1);
+      setOldMessages([]);
+    }
+
+  }, [chatId])
+
   // New message handler - wrapped in useCallback to prevent re-rendering
   //it is used to update the messages array when a new message is received
   const newMessageHandler = useCallback((data) => {
+
+    if (data.chatId !== chatId) return;
+
     setMessages(prev => [...prev, data.message])
-  }, [])
+
+  }, [chatId])
 
 
   // Event handlers object
@@ -200,7 +222,7 @@ const Chat = ({ chatId }) => {
 
       </form>
 
-      <FileMenu anchorEl={fileMenuAnchor} chatId={chatId}/>
+      <FileMenu anchorEl={fileMenuAnchor} chatId={chatId} />
 
     </>
   )

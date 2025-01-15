@@ -2,6 +2,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import  authSlice from "./slices/auth";
 import api from "./api/api.rtk";
 import miscSlice from "./slices/misc";
+import chatSlice from "./slices/chat";
 
 // console.log(authSlice);
 
@@ -18,6 +19,10 @@ export const store = configureStore({
 
         //misc slice reducer
         [miscSlice.name] : miscSlice.reducer,
+
+
+        //chat slice reducer
+        [chatSlice.name] : chatSlice.reducer,
 
 
         //adding api reducer to the store

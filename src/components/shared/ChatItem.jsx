@@ -55,7 +55,7 @@ const ChatItem = ({
                         <Typography
                             variant="body2"
                             sx={{
-                                color: "#ff4757",
+                                color: "darkgrey",
                                 fontSize: "0.8rem",
                                 fontWeight: "500",
                                 textWrap: "wrap",

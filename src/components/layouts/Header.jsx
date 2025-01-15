@@ -1,4 +1,4 @@
-import { AppBar, Backdrop, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, Backdrop, Badge, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import { orange } from '../../constants/color'
 import React, { lazy, Suspense, useState } from 'react'
 import {
@@ -17,6 +17,7 @@ import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/slices/auth'
 import { setIsMobileMenu, setIsNotificationModalOpen, setIsSearchModalOpen } from '../../redux/slices/misc'
+import { resetNotificationCount } from '../../redux/slices/chat'
 
 const SearchDialog = lazy(() => import('../specific/Search'));
 const NotificationsDialog = lazy(() => import('../specific/Notifications'));
@@ -28,6 +29,7 @@ const Header = () => {
     const dispatch = useDispatch();
 
     const {isSearchModalOpen, isNotificationModalOpen} = useSelector(state=>state.misc)
+    const {notificationCount} = useSelector(state=>state.chat)
 
     const [isNewGroup, setIsNewGroup] = useState(false);
 
@@ -49,6 +51,7 @@ const Header = () => {
     const openNotificationHandler = () => {
         // console.log("Notification");
         dispatch(setIsNotificationModalOpen(true));
+        dispatch(resetNotificationCount());
     }
 
     const navigateToGroupHandler = () => {
@@ -134,6 +137,7 @@ const Header = () => {
                                 title="Notifications"
                                 icon={<NotificationsIcon />}
                                 onClick={openNotificationHandler}
+                                value={notificationCount}
                             />
 
                             <IconBtn
@@ -181,11 +185,13 @@ const Header = () => {
     )
 }
 
-const IconBtn = ({ title, icon, onClick }) => {
+const IconBtn = ({ title, icon, onClick, value }) => {
     return (
         <Tooltip title={title}>
             <IconButton color='inherit' size="large" onClick={onClick}>
-                {icon}
+                {
+                    value ? <Badge badgeContent={value} color='error'>{icon}</Badge> : icon
+                }
             </IconButton>
         </Tooltip>
     )

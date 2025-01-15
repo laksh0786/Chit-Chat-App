@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import Header from './Header'
 import Title from '../shared/Title'
 import Grid from '@mui/material/Grid2'
@@ -11,6 +11,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobileMenu } from '../../redux/slices/misc'
 import useErrors from '../../hooks/useErrors.js'
 import { getSocket } from '../../socket.jsx'
+import {useSocketEvents} from "../../hooks/useSocketEvents.js"
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from '../../constants/event.js'
+import { incrementNotifications, setNewMessagesAlert } from '../../redux/slices/chat.js'
+import { getOrSaveFromLocalStorage } from '../../lib/feature.js'
 
 //Higher Order Component - it is a function that returns a Component
 const AppLayout = () => {
@@ -29,12 +33,21 @@ const AppLayout = () => {
 
             const { isMobileMenu } = useSelector(state => state.misc)
             const { user } = useSelector(state => state.auth)
+            const { newMessageAlert } = useSelector(state => state.chat)
             // console.log(isMobileMenu);
 
             //by just calling the useMyChatsQuery hook we are fetching the chats not need to call the trigger function
             const { isLoading, data, error, isError, refetch } = useMyChatsQuery("");
 
             useErrors([{ isError, error }]);
+
+
+            useEffect(()=>{
+
+                getOrSaveFromLocalStorage({key:NEW_MESSAGE_ALERT, value:newMessageAlert})
+
+            }, [newMessageAlert])
+
 
             //printing the chats data fetched using useMyChatsQuery
             // console.log(data);
@@ -47,6 +60,32 @@ const AppLayout = () => {
             const handleMobileMenuClose = () => {
                 dispatch(setIsMobileMenu(false));
             }
+
+
+            const newMessageAlertHandler = useCallback((data)=>{
+
+                //if chatId and received chatId is same then don't increment the notification
+                if(chatId === data.chatId) return;
+
+                dispatch(setNewMessagesAlert(data));
+
+            }, [chatId]) //in the dependency array we are adding chatId so that it will only re-render when chatId changes as we are using chatId in the function for comparison
+
+
+            const newRequestHandler = useCallback(()=>{
+                dispatch(incrementNotifications());
+            }, [])
+
+            //listening the event
+            const eventHandler = {
+
+                [NEW_MESSAGE_ALERT] : newMessageAlertHandler, 
+                [NEW_REQUEST] : newRequestHandler 
+            
+            };
+
+            useSocketEvents(socket , eventHandler);
+            
 
             return (
                 <>
@@ -61,6 +100,7 @@ const AppLayout = () => {
                                     chats={data?.chats}
                                     chatId={chatId}
                                     handleDeleteChat={handleDeleteChat}
+                                    newMessagesAlert={newMessageAlert}
                                 />
                             </Drawer>
                         )
@@ -81,6 +121,7 @@ const AppLayout = () => {
                                         chats={data?.chats}
                                         chatId={chatId}
                                         handleDeleteChat={handleDeleteChat}
+                                        newMessagesAlert={newMessageAlert}
                                     />
                                 )
                             }

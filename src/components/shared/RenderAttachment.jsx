@@ -6,17 +6,19 @@ const RenderAttachment = ({file, url}) => {
 
     switch (file) {
         case "video":
-            return <video src={url} preload='none' width="150px" controls />
+            return <video src={url} preload='none' width="200px" controls />
             
 
         case "image":
-            return <img src={transformImage(url, 200)} alt="attachment" width="150px" height={"150px"} style={{
+            return <img src={transformImage(url, 200)} alt="attachment" width="200px" height={"150px"} style={{
                 objectFit: "contain",
                 // borderRadius: "1rem",
             }} />
 
         case "audio":
-            return <audio src={url} preload='none' controls />
+            return <audio src={url} preload='none' controls style={{
+                maxWidth:"100%"
+            }} />
             
 
         default:

@@ -7,7 +7,7 @@ import { InputBox } from '../components/styles/StyledComponents';
 import FileMenu from '../components/dialog/FileMenu';
 import MessageComponent from '../components/shared/MessageComponent';
 import { getSocket } from '../socket';
-import { NEW_MESSAGE } from '../constants/event';
+import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/event';
 import { useGetChatDetailsQuery, useGetChatMessagesQuery } from '../redux/api/api.rtk';
 import { useSocketEvents } from '../hooks/useSocketEvents';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +31,12 @@ const Chat = ({ chatId }) => {
   //state to store messages of the chat
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
+
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState(false);
+  const typingTimeout = useRef(null);
+  console.log(typingUser);
+
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
 
@@ -65,6 +71,28 @@ const Chat = ({ chatId }) => {
 
   useErrors(errors);
 
+
+  // Function to handle message input change
+  const messageChangeHandler = (e) => {
+
+    setMessage(e.target.value);
+
+    if(!isTyping){
+      socket.emit(START_TYPING, { chatId, members });
+      setIsTyping(true);
+    }
+
+    // Clear the timeout if typingTimeout.current is set
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
+
+    typingTimeout.current = setTimeout(() => {
+      socket.emit(STOP_TYPING , { chatId, members });
+      setIsTyping(false);
+    }, [2000]);
+
+  }
 
 
   // Function to open file menu
@@ -118,9 +146,29 @@ const Chat = ({ chatId }) => {
   }, [chatId])
 
 
+  //start typing handler
+  const startTypingHandler = useCallback((data) => {
+
+    if (data.chatId !== chatId) return;
+    setTypingUser(true);
+
+  }, [chatId])
+
+
+  // Stop typing handler
+  const stopTypingHandler = useCallback((data) => {
+    
+    if (data.chatId !== chatId) return;
+    setTypingUser(false);
+
+  }, [chatId])
+
+
   // Event handlers object
   const eventHandler = {
     [NEW_MESSAGE]: newMessageHandler,
+    [START_TYPING]: startTypingHandler,
+    [STOP_TYPING]: stopTypingHandler
   }
 
   // Handle socket events using custom hook
@@ -188,7 +236,7 @@ const Chat = ({ chatId }) => {
           <InputBox
             placeholder='Type your message here....'
             value={message}
-            onChange={e => setMessage(e.target.value)}
+            onChange={messageChangeHandler}
             sx={{
               padding: '1rem 4rem',
               borderRadius: '1.5rem',

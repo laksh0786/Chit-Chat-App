@@ -7,7 +7,7 @@ import { InputBox } from '../components/styles/StyledComponents';
 import FileMenu from '../components/dialog/FileMenu';
 import MessageComponent from '../components/shared/MessageComponent';
 import { getSocket } from '../socket';
-import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/event';
+import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/event';
 import { useGetChatDetailsQuery, useGetChatMessagesQuery } from '../redux/api/api.rtk';
 import { useSocketEvents } from '../hooks/useSocketEvents';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,13 +15,17 @@ import useErrors from '../hooks/useErrors';
 import { useInfiniteScrollTop } from "6pp";
 import { setIsFileMenuOpen } from '../redux/slices/misc';
 import { removeMessageAlert } from '../redux/slices/chat';
+import TypingLoader from '../components/layouts/TypingLoader';
+
 
 
 const Chat = ({ chatId }) => {
 
-  const containerRef = useRef(null);
   const socket = getSocket();
   const dispatch = useDispatch();
+
+  const containerRef = useRef(null);
+  const bottomRef = useRef(null);
 
   //getting the user from the redux store
   const { user } = useSelector(state => state.auth);
@@ -35,7 +39,6 @@ const Chat = ({ chatId }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(false);
   const typingTimeout = useRef(null);
-  console.log(typingUser);
 
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
 
@@ -135,6 +138,16 @@ const Chat = ({ chatId }) => {
 
   }, [chatId])
 
+
+  useEffect(() => {
+
+    if(bottomRef.current){
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+
+  }, [messages])
+  
+
   // New message handler - wrapped in useCallback to prevent re-rendering
   //it is used to update the messages array when a new message is received
   const newMessageHandler = useCallback((data) => {
@@ -149,6 +162,7 @@ const Chat = ({ chatId }) => {
   //start typing handler
   const startTypingHandler = useCallback((data) => {
 
+    //if the chatId is not equal to the chatId of the chat so not to show the typing loader as it will be shown in all the chats of the user
     if (data.chatId !== chatId) return;
     setTypingUser(true);
 
@@ -164,8 +178,28 @@ const Chat = ({ chatId }) => {
   }, [chatId])
 
 
+  // Alert handler
+  const alertHandler = useCallback((content)=>{
+
+    const messageForAlert = {
+      content,
+      sender:{
+        _id:"idnwnpnidneini",
+        name:"Admin",
+      },
+      chat:chatId,
+      createdAt: new Date().toISOString(),
+    }
+
+    setMessages(prev => [...prev, messageForAlert]);
+
+  }, [chatId])
+  
+
+
   // Event handlers object
   const eventHandler = {
+    [ALERT] : alertHandler,
     [NEW_MESSAGE]: newMessageHandler,
     [START_TYPING]: startTypingHandler,
     [STOP_TYPING]: stopTypingHandler
@@ -201,6 +235,12 @@ const Chat = ({ chatId }) => {
             )
           })
         }
+
+        {
+          typingUser && <TypingLoader/>
+        }
+
+        <div ref={bottomRef}/>
 
       </Stack>
 

@@ -2,26 +2,30 @@ import React, { lazy, memo, Suspense, useEffect, useState } from 'react';
 import { matteBlack, lightGray, lightBlue as primaryColor, darkGray, lightBlue, orange } from '../constants/color';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AvatarCard from '../components/shared/Avatarcard';
+import LayoutLoader from "../components/layouts/LayoutLoader"
 import { sampleChats, sampleUsers } from '../constants/sampleData';
 import { Link } from '../components/styles/StyledComponents';
 import { Add as AddIcon, Delete as DeleteIcon, Done as DoneIcon, Edit as EditIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material';
-import { Backdrop, Box, Button, ButtonGroup, Drawer, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button, Drawer, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import UserItem from '../components/shared/UserItem';
-import shadows from '@mui/material/styles/shadows';
+import { useGetMyGroupsQuery } from '../redux/api/api.rtk';
+import useErrors from '../hooks/useErrors';
 
 const ConfirmDeleteDialog = lazy(() => import('../components/dialog/ConfirmDeleteDialog'));
 const AddMemberDialog = lazy(() => import('../components/dialog/AddMemberDialog'));
 
+const isAddMember = false;
+
 const Group = () => {
 
   const navigate = useNavigate();
-  const isAddMember = false;
 
-
-  // Get chatId from URL
+  // Get chatId from URL eg /group?group=123 we get 123
   const chatId = useSearchParams()[0].get('group');
-  // console.log(chatId);
+
+  const myGroups = useGetMyGroupsQuery('');
+  console.log(myGroups.data);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -33,6 +37,15 @@ const Group = () => {
 
   const handleMobile = () => setIsMobileMenuOpen(prev => !prev);
   const handleMobileClose = () => setIsMobileMenuOpen(false);
+
+
+  //senidng the error if there is any
+  const errors = [
+    { isError: myGroups.isError, error: myGroups.error },
+  ]
+
+  useErrors(errors);
+
 
   // Update Group Name Handler
   const updateGroupName = () => {
@@ -171,7 +184,7 @@ const Group = () => {
     </Stack>
   )
 
-  return (
+  return myGroups.isLoading ? <LayoutLoader/> : (
     <Grid container height="100vh">
       <Grid
         size={{ sm: 4 }}

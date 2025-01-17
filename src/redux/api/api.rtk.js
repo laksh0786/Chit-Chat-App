@@ -131,6 +131,17 @@ const api = createApi({
                 })
             }
 
+        }),
+
+        getMyGroups : builder.query({
+
+            query:()=>({
+                url : '/chat/get-my-chats/groups',
+                credentials:"include"
+            }),
+
+            providesTags:["Chat"]
+            
         })
 
     })
@@ -144,7 +155,6 @@ export default api;
 
 
 export const {
-
     useMyChatsQuery,
     useLazySearchUsersQuery,
     useSendFriendRequestMutation,
@@ -152,6 +162,6 @@ export const {
     useAcceptFriendRequestMutation,
     useGetChatDetailsQuery,
     useGetChatMessagesQuery,
-    useSendAttachmentsMutation
-
+    useSendAttachmentsMutation,
+    useGetMyGroupsQuery
 } = api

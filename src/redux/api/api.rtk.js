@@ -31,7 +31,7 @@ const api = createApi({
             //query is a function that takes an object with the url property that specifies the URL of the endpoint that we want to fetch data from. We can also provide other options like credentials, headers, and other options that are supported by the fetch API.
             query: () => ({
                 url: `/chat/get-my-chats`,
-                credentials: "include"
+                credentials: "include"  //this is used to include the cookies in the request
             }),
 
             //provideTags is an array that helps us to provide tags to particular fetches. In this case, we are providing the "Chat" tag to the fetch so that when the data is updated, the cache is invalidated and the data is refetched from the API. We use invalidateTags to invalidate the cache when the data is updated in the updateChat mutation or Api.
@@ -113,35 +113,70 @@ const api = createApi({
 
         getChatMessages: builder.query({
 
-            query:({chatId , page})=>({
-                url:`/chat/messages/${chatId}?page=${page}`,
-                credentials:"include"
+            query: ({ chatId, page }) => ({
+                url: `/chat/messages/${chatId}?page=${page}`,
+                credentials: "include"
             }),
             keepUnusedDataFor: 0,
         }),
 
-        sendAttachments : builder.mutation({
-            
-            query:(data)=>{
+        sendAttachments: builder.mutation({
+
+            query: (data) => {
                 return ({
-                    url:'/chat/send-attachments',
-                    method:'POST',
-                    credentials:"include",
-                    body:data
+                    url: '/chat/send-attachments',
+                    method: 'POST',
+                    credentials: "include",
+                    body: data
                 })
             }
 
         }),
 
-        getMyGroups : builder.query({
+        getMyGroups: builder.query({
 
-            query:()=>({
-                url : '/chat/get-my-chats/groups',
-                credentials:"include"
+            query: () => ({
+                url: '/chat/get-my-chats/groups',
+                credentials: "include"
             }),
 
-            providesTags:["Chat"]
-            
+            providesTags: ["Chat"]
+
+        }),
+
+        availableFriends: builder.query({
+
+            query: (chatId) => {
+
+                let url = '/user/friends'
+
+                if(chatId){
+                    url += `?chatId=${chatId}`
+                }
+
+                return ({
+                    url,
+                    credentials: "include"
+                })
+
+            },
+
+            providesTags: ["User"]
+        }),
+
+        createGroup : builder.mutation({
+
+            query: ({name , members})=>({
+
+                url : '/chat/new-group-chat',
+                credentials: "include",
+                method: 'POST',
+                body: {name , members}
+
+            }),
+
+            invalidatesTags: ["Chat"]
+
         })
 
     })
@@ -163,5 +198,7 @@ export const {
     useGetChatDetailsQuery,
     useGetChatMessagesQuery,
     useSendAttachmentsMutation,
-    useGetMyGroupsQuery
+    useGetMyGroupsQuery,
+    useAvailableFriendsQuery,
+    useCreateGroupMutation
 } = api

@@ -27,7 +27,7 @@ const ChatItem = ({
                 display: "flex",
                 alignItems: "center",
                 witdh: "100%",
-                // gap: "1.2rem",
+                gap: "2rem",
                 padding: "1rem",
                 backgroundColor: sameSender ? "#282828" : "#ffffff",
                 color: sameSender ? "#ffffff" : "#000000",

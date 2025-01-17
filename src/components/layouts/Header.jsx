@@ -16,7 +16,7 @@ import { userLogout } from '../../constants/apiEndpoints'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/slices/auth'
-import { setIsMobileMenu, setIsNotificationModalOpen, setIsSearchModalOpen } from '../../redux/slices/misc'
+import { setIsMobileMenu, setIsNewGroupModalOpen, setIsNotificationModalOpen, setIsSearchModalOpen } from '../../redux/slices/misc'
 import { resetNotificationCount } from '../../redux/slices/chat'
 
 const SearchDialog = lazy(() => import('../specific/Search'));
@@ -28,10 +28,8 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const {isSearchModalOpen, isNotificationModalOpen} = useSelector(state=>state.misc)
+    const {isSearchModalOpen, isNotificationModalOpen, isNewGroupModalOpen} = useSelector(state=>state.misc)
     const {notificationCount} = useSelector(state=>state.chat)
-
-    const [isNewGroup, setIsNewGroup] = useState(false);
 
     const mobileViewHandler = () => {
         // console.log("Mobile View")
@@ -45,7 +43,7 @@ const Header = () => {
 
     const openNewGroupHandler = () => {
         // console.log("New Group");
-        setIsNewGroup(prev => !prev);
+        dispatch(setIsNewGroupModalOpen(true));
     }
 
     const openNotificationHandler = () => {
@@ -174,7 +172,7 @@ const Header = () => {
 
 
             {
-                isNewGroup && (
+                isNewGroupModalOpen && (
                     <Suspense fallback={<Backdrop open />}>
                         <NewGroupDialog />
                     </Suspense>

@@ -25,7 +25,7 @@ const Group = () => {
   const chatId = useSearchParams()[0].get('group');
 
   const myGroups = useGetMyGroupsQuery('');
-  console.log(myGroups.data);
+  // console.log(myGroups.data);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -211,7 +211,7 @@ const Group = () => {
           },
         }}
       >
-        <GroupList myGroups={sampleChats} chatId={chatId} />
+        <GroupList myGroups={myGroups?.data?.groups} chatId={chatId} />
       </Grid>
 
       <Grid
@@ -319,7 +319,7 @@ const Group = () => {
         onClose={handleMobileClose}
         sx={{ display: { xs: 'block', sm: 'none' }, bgcolor: "#d2f8fa" }}
       >
-        <GroupList w="60vw" myGroups={sampleChats} chatId={chatId} />
+        <GroupList w="60vw" myGroups={myGroups?.data?.groups} chatId={chatId} />
       </Drawer>
     </Grid>
   );
@@ -357,7 +357,7 @@ const GroupListItem = memo(({ group, chatId }) => {
     >
       <Stack
         direction="row"
-        spacing="1rem"
+        spacing="2.5rem"
         alignItems="center"
         sx={{
           padding: '1rem',

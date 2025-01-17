@@ -181,6 +181,8 @@ const Chat = ({ chatId }) => {
   // Alert handler
   const alertHandler = useCallback((content)=>{
 
+    // console.log(content)
+
     const messageForAlert = {
       content,
       sender:{

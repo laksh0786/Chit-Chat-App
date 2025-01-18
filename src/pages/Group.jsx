@@ -6,11 +6,12 @@ import LayoutLoader from "../components/layouts/LayoutLoader"
 import { sampleChats, sampleUsers } from '../constants/sampleData';
 import { Link } from '../components/styles/StyledComponents';
 import { Add as AddIcon, Delete as DeleteIcon, Done as DoneIcon, Edit as EditIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material';
-import { Backdrop, Box, Button, Drawer, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button, Drawer, IconButton, Skeleton, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import UserItem from '../components/shared/UserItem';
-import { useGetMyGroupsQuery } from '../redux/api/api.rtk';
+import { useGetChatDetailsQuery, useGetMyGroupsQuery, useRenameGroupMutation } from '../redux/api/api.rtk';
 import useErrors from '../hooks/useErrors';
+import useAsyncMutation from '../hooks/useAsyncMutation';
 
 const ConfirmDeleteDialog = lazy(() => import('../components/dialog/ConfirmDeleteDialog'));
 const AddMemberDialog = lazy(() => import('../components/dialog/AddMemberDialog'));
@@ -25,7 +26,14 @@ const Group = () => {
   const chatId = useSearchParams()[0].get('group');
 
   const myGroups = useGetMyGroupsQuery('');
+
   // console.log(myGroups.data);
+
+  const groupDetails = useGetChatDetailsQuery({ chatId, populate: true }, { skip: !chatId });
+
+  // console.log(groupDetails.data);
+
+  const [renameGroupHandler, isLoadingRenameGroup] = useAsyncMutation(useRenameGroupMutation);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -42,15 +50,34 @@ const Group = () => {
   //senidng the error if there is any
   const errors = [
     { isError: myGroups.isError, error: myGroups.error },
+    { isError: groupDetails.isError, error: groupDetails.error }
   ]
 
   useErrors(errors);
 
+  useEffect(() => {
+
+    if (groupDetails.data) {
+      setGroupName(groupDetails?.data?.chat?.name);
+      setGroupNameUpdated(groupDetails?.data?.chat?.name);
+    }
+
+    return ()=>{
+      setGroupName('');
+      setGroupNameUpdated('');
+      setIsEdit(false);
+    }
+
+  }, [groupDetails.data])
+
 
   // Update Group Name Handler
   const updateGroupName = () => {
-    console.log("Group Name Updated to:", groupNameUpdated);
+
+    // console.log("Group Name Updated to:", groupNameUpdated);
     setIsEdit(false);
+    renameGroupHandler(`Updating group name....` , {chatId , name : groupNameUpdated})
+  
   };
 
   // Add Member Handler
@@ -82,12 +109,6 @@ const Group = () => {
 
   // Get group name
   useEffect(() => {
-
-    if (chatId) {
-      setGroupName(`Group ${chatId}`);
-      setGroupNameUpdated(`Group ${chatId}`);
-    }
-
     // Clean the values if the chatId (chat group) changes
     return () => {
       setGroupName('');
@@ -149,7 +170,7 @@ const Group = () => {
               },
             }}
           />
-          <IconButton onClick={updateGroupName}>
+          <IconButton onClick={updateGroupName} disabled={isLoadingRenameGroup}>
             <DoneIcon />
           </IconButton>
         </>
@@ -158,7 +179,7 @@ const Group = () => {
           <Typography variant="h4" sx={{ color: darkGray, fontWeight: 'bold', marginBottom: '1rem' }}>
             {groupName}
           </Typography>
-          <IconButton onClick={() => setIsEdit(true)}>
+          <IconButton onClick={() => setIsEdit(true)} disabled={isLoadingRenameGroup}>
             <EditIcon />
           </IconButton>
         </>
@@ -184,7 +205,7 @@ const Group = () => {
     </Stack>
   )
 
-  return myGroups.isLoading ? <LayoutLoader/> : (
+  return myGroups.isLoading ? <LayoutLoader /> : (
     <Grid container height="100vh">
       <Grid
         size={{ sm: 4 }}
@@ -278,17 +299,19 @@ const Group = () => {
             {/* Member Card */}
 
             {
-              sampleUsers.map((user) => {
-                return < UserItem user={user} key={user._id} isAdded
-                  styling={{
-                    boxShadow: '0px 0px 0.5rem rgba(0, 0, 0, 0.2)',
-                    padding: "1rem 2rem",
-                    borderRadius: "1rem",
-                    boxShadow: "0 0 0 0",
-                  }}
-                  handler={removeMemberHandler}
-                />
-              })
+              groupDetails?.isLoading
+                ? <Skeleton />
+                : groupDetails?.data?.chat?.members?.map((user) => {
+                  return < UserItem user={user} key={user._id} isAdded
+                    styling={{
+                      boxShadow: '0px 0px 0.5rem rgba(0, 0, 0, 0.2)',
+                      padding: "1rem 2rem",
+                      borderRadius: "1rem",
+                      boxShadow: "0 0 0 0",
+                    }}
+                    handler={removeMemberHandler}
+                  />
+                })
             }
 
           </Stack>

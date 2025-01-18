@@ -12,7 +12,7 @@ import { setIsMobileMenu } from '../../redux/slices/misc'
 import useErrors from '../../hooks/useErrors.js'
 import { getSocket } from '../../socket.jsx'
 import {useSocketEvents} from "../../hooks/useSocketEvents.js"
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from '../../constants/event.js'
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from '../../constants/event.js'
 import { incrementNotifications, setNewMessagesAlert } from '../../redux/slices/chat.js'
 import { getOrSaveFromLocalStorage } from '../../lib/feature.js'
 
@@ -76,11 +76,16 @@ const AppLayout = () => {
                 dispatch(incrementNotifications());
             }, [])
 
+            const refetchHandler = useCallback(()=>{
+                refetch();  //refetching the chats using the useMyChatsQuery hook refetch function
+            }, [])
+
             //listening the event
             const eventHandler = {
 
                 [NEW_MESSAGE_ALERT] : newMessageAlertHandler, 
-                [NEW_REQUEST] : newRequestHandler 
+                [NEW_REQUEST] : newRequestHandler,
+                [REFETCH_CHATS] : refetchHandler 
             
             };
 

@@ -44,7 +44,7 @@ const Chat = ({ chatId }) => {
 
 
   // Fetch chat details we use skip when we don't have chatId
-  const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
+  const chatDetails = useGetChatDetailsQuery({ chatId } , { skip: !chatId });
   const members = chatDetails?.data?.chat?.members;
 
   //getting the old messages of the chat

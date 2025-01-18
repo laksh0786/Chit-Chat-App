@@ -31,7 +31,7 @@ const Notifications = () => {
 
       if(res.data?.success){
 
-        console.log("Socket require here");
+        // console.log("Socket require here");
 
         toast.success(res.data.message);
 

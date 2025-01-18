@@ -23,6 +23,7 @@ const useAsyncMutation = (mutationHook) => {
             const res = await mutate(...args);
 
             if (res?.data) {
+                // console.log(res.data);
                 setData(res.data);
                 toast.success(res?.data?.message || "Request processed successfully", {
                     id: toastId

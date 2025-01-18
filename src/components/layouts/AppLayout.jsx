@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import {useNavigate} from "react-router-dom"
 import Header from './Header'
 import Title from '../shared/Title'
@@ -9,13 +9,14 @@ import Profile from '../specific/Profile'
 import { useMyChatsQuery } from '../../redux/api/api.rtk'
 import { Drawer, Skeleton } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsMobileMenu } from '../../redux/slices/misc'
+import { setIsDeleteMenuOpen, setIsMobileMenu, setSelectedDeleteChat } from '../../redux/slices/misc'
 import useErrors from '../../hooks/useErrors.js'
 import { getSocket } from '../../socket.jsx'
 import {useSocketEvents} from "../../hooks/useSocketEvents.js"
 import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from '../../constants/event.js'
 import { incrementNotifications, setNewMessagesAlert } from '../../redux/slices/chat.js'
 import { getOrSaveFromLocalStorage } from '../../lib/feature.js'
+import DeleteChatMenu from '../dialog/DeleteChatMenu.jsx'
 
 //Higher Order Component - it is a function that returns a Component
 const AppLayout = () => {
@@ -26,6 +27,7 @@ const AppLayout = () => {
             const params = useParams();
             const chatId = params.chatId;
             const navigate = useNavigate();
+            const deleteOptionAnchor = useRef(null);
 
             const socket = getSocket();
 
@@ -54,9 +56,17 @@ const AppLayout = () => {
             //printing the chats data fetched using useMyChatsQuery
             // console.log(data);
 
+
+            //function to open and handle the delete chat menu
             const handleDeleteChat = (e, _id, groupChat) => {
-                e.preventDefault();
-                console.log("Delete Chat", _id, groupChat)
+                
+                dispatch(setIsDeleteMenuOpen(true));
+
+                dispatch(setSelectedDeleteChat({chatId : _id , groupChat}));
+
+                deleteOptionAnchor.current = e.currentTarget;
+
+                // console.log("Delete Chat", _id, groupChat)
             }
 
             const handleMobileMenuClose = () => {
@@ -99,6 +109,8 @@ const AppLayout = () => {
                 <>
                     <Title />
                     <Header />
+
+                    <DeleteChatMenu dispatch={dispatch} deleteOptionAnchor={deleteOptionAnchor}/>
 
                     {
                         isLoading ? (<Skeleton />) : (

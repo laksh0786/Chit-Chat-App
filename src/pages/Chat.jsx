@@ -16,10 +16,13 @@ import { useInfiniteScrollTop } from "6pp";
 import { setIsFileMenuOpen } from '../redux/slices/misc';
 import { removeMessageAlert } from '../redux/slices/chat';
 import TypingLoader from '../components/layouts/TypingLoader';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const Chat = ({ chatId }) => {
+
+  const navigate = useNavigate();
 
   const socket = getSocket();
   const dispatch = useDispatch();
@@ -146,6 +149,15 @@ const Chat = ({ chatId }) => {
     }
 
   }, [messages])
+
+
+  useEffect(()=>{
+
+    if(!chatDetails?.isLoading && !chatDetails?.data?.chat){
+      return navigate("/");
+    }
+
+  }, [chatDetails?.data])
   
 
   // New message handler - wrapped in useCallback to prevent re-rendering

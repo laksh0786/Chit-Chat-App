@@ -5,6 +5,7 @@
 //using RTK Query, we can create a new API slice that will handle all the API requests and responses for us.
 //We can define the endpoints we want to fetch data from, and RTK Query will automatically generate the necessary actions, reducers, and hooks to interact with those endpoints.
 //In this file, we define an API slice using the createApi function from RTK Query. We define an endpoint for fetching the data from the API and export the generated API slice.
+//Using builder.query, we define an endpoint for fetching the data from the API. and using builder.mutation, we define an endpoint for sending data to the API.
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { server } from "../../constants/config"
@@ -160,8 +161,7 @@ const api = createApi({
                 })
 
             },
-
-            providesTags: ["User"]
+            keepUnusedDataFor: 0
         }),
 
         createGroup : builder.mutation({
@@ -192,6 +192,40 @@ const api = createApi({
 
             invalidatesTags:["Chat"]
 
+        }),
+
+        addGroupMembers : builder.mutation({
+            
+            query : ({chatId , members})=>({
+                url : "/chat/add-group-members",
+                method : "PUT",
+                credentials : "include",
+                body : {chatId , members}
+            }),
+            
+            invalidatesTags:["Chat"]
+        }),
+
+        removeGroupMember : builder.mutation({
+            query:({chatId , userId})=>({
+                url : "/chat/remove-group-member",
+                method : "PUT",
+                credentials : "include",
+                body : {chatId , userId}
+            }),
+            invalidatesTags:["Chat"]
+        }),
+
+        deleteChat : builder.mutation({
+
+            query: (chatId)=>({
+                url : `/chat/${chatId}`,
+                method:"DELETE",
+                credentials : "include"
+            }),
+
+            invalidatesTags:["Chat"]
+
         })
 
     })
@@ -216,5 +250,8 @@ export const {
     useGetMyGroupsQuery,
     useAvailableFriendsQuery,
     useCreateGroupMutation,
-    useRenameGroupMutation
+    useRenameGroupMutation,
+    useAddGroupMembersMutation,
+    useRemoveGroupMemberMutation,
+    useDeleteChatMutation
 } = api

@@ -1,12 +1,22 @@
-import { Button, Dialog, DialogTitle, Stack, Typography } from '@mui/material'
+import { Button, Dialog, DialogTitle, Skeleton, Stack, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { sampleUsers } from "../../constants/sampleData"
 import UserItem from "../shared/UserItem"
 import { lightGray } from '../../constants/color'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsAddMemberModalOpen } from '../../redux/slices/misc'
+import { useAddGroupMembersMutation, useAvailableFriendsQuery } from '../../redux/api/api.rtk'
+import useAsyncMutation from '../../hooks/useAsyncMutation'
+import useErrors from '../../hooks/useErrors'
 
-const AddMemberDialog = ({ addMember, isLoadingAddMember, chatId }) => {
+const AddMemberDialog = ({chatId }) => {
 
-    const [members, setMembers] = useState(sampleUsers);
+    const {isAddMemberModalOpen} = useSelector(state => state.misc);
+    const dispatch = useDispatch();
+
+    const {isLoading, data , error , isError} = useAvailableFriendsQuery(chatId);
+
+    const [addGroupMembersTrigger, isLoadingAddMember] = useAsyncMutation(useAddGroupMembersMutation);
+
     const [selectedMembers, setSelectedMembers] = useState([]);
 
     // console.log(selectedMembers);
@@ -21,18 +31,26 @@ const AddMemberDialog = ({ addMember, isLoadingAddMember, chatId }) => {
         });
     }
 
+    const closeHandler = () => {
+        dispatch(setIsAddMemberModalOpen(false));
+    }
+
     //Add member submit Handler
     const submitHandler = () => {
+
+        addGroupMembersTrigger("Adding Members....", {chatId, members: selectedMembers});
+        
         closeHandler();
     }
 
-    const closeHandler = () => {
-        setSelectedMembers([]);
-        setMembers([]);
-    }
+
+    // console.log(data.friends);
+
+    //error handling
+    useErrors([{isError, error}]);
 
     return (
-        <Dialog open onClose={closeHandler}>
+        <Dialog open={isAddMemberModalOpen} onClose={closeHandler}>
 
             <Stack bgcolor={lightGray} padding={"1rem"} width={{ xs: "20rem", sm: "27rem" }} spacing={"1.5rem"}>
 
@@ -42,8 +60,8 @@ const AddMemberDialog = ({ addMember, isLoadingAddMember, chatId }) => {
 
                 <Stack spacing={"1rem"}>
 
-                    {members.length > 0 ?
-                        members.map((user) => {
+                    {isLoading ? <Skeleton/> : data?.friends?.length > 0 ?
+                        data?.friends?.map((user) => {
                             return <UserItem key={user._id}
                                         user={user}
                                         handler={selectMemberHandler}

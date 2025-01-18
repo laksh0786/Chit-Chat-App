@@ -6,21 +6,25 @@ import LayoutLoader from "../components/layouts/LayoutLoader"
 import { sampleChats, sampleUsers } from '../constants/sampleData';
 import { Link } from '../components/styles/StyledComponents';
 import { Add as AddIcon, Delete as DeleteIcon, Done as DoneIcon, Edit as EditIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material';
-import { Backdrop, Box, Button, Drawer, IconButton, Skeleton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, Drawer, IconButton, Skeleton, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import UserItem from '../components/shared/UserItem';
-import { useGetChatDetailsQuery, useGetMyGroupsQuery, useRenameGroupMutation } from '../redux/api/api.rtk';
+import { useAddGroupMembersMutation, useDeleteChatMutation, useGetChatDetailsQuery, useGetMyGroupsQuery, useRemoveGroupMemberMutation, useRenameGroupMutation } from '../redux/api/api.rtk';
 import useErrors from '../hooks/useErrors';
 import useAsyncMutation from '../hooks/useAsyncMutation';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsAddMemberModalOpen } from '../redux/slices/misc';
 
 const ConfirmDeleteDialog = lazy(() => import('../components/dialog/ConfirmDeleteDialog'));
 const AddMemberDialog = lazy(() => import('../components/dialog/AddMemberDialog'));
 
-const isAddMember = false;
 
 const Group = () => {
 
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const { isAddMemberModalOpen } = useSelector(state => state.misc);
 
   // Get chatId from URL eg /group?group=123 we get 123
   const chatId = useSearchParams()[0].get('group');
@@ -34,6 +38,10 @@ const Group = () => {
   // console.log(groupDetails.data);
 
   const [renameGroupHandler, isLoadingRenameGroup] = useAsyncMutation(useRenameGroupMutation);
+
+  const [removeGroupMemberTrigger, isLoadingRemoveMember] = useAsyncMutation(useRemoveGroupMemberMutation);
+
+  const [deleteChatTrigger, isLoadingDeleteChat] = useAsyncMutation(useDeleteChatMutation);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -62,7 +70,7 @@ const Group = () => {
       setGroupNameUpdated(groupDetails?.data?.chat?.name);
     }
 
-    return ()=>{
+    return () => {
       setGroupName('');
       setGroupNameUpdated('');
       setIsEdit(false);
@@ -76,13 +84,14 @@ const Group = () => {
 
     // console.log("Group Name Updated to:", groupNameUpdated);
     setIsEdit(false);
-    renameGroupHandler(`Updating group name....` , {chatId , name : groupNameUpdated})
-  
+    renameGroupHandler(`Updating group name....`, { chatId, name: groupNameUpdated })
+
   };
 
   // Add Member Handler
   const openAddMemberHandler = () => {
-    console.log("Add Member");
+    dispatch(setIsAddMemberModalOpen(true));
+    // console.log("Add Member");
   };
 
   // opening the confirm delete dialog
@@ -95,16 +104,22 @@ const Group = () => {
     setConfirmDeleteDialog(false);
   }
 
-  // Delete Member Handler
+  // Delete Group Handler
   const deleteHandler = () => {
-    console.log("Delete Group");
+    // console.log("Delete Group");
+
+    deleteChatTrigger(`Deleting Group....`, chatId);
     closeConfirmDeleteHandler();
+    navigate('/groups');
   };
 
 
   // Remove Member Handler
-  const removeMemberHandler = (id) => {
-    console.log("Remove Member", id);
+  const removeMemberHandler = (userId) => {
+
+    removeGroupMemberTrigger(`Removing Member....`, { chatId, userId });
+
+
   };
 
   // Get group name
@@ -299,8 +314,8 @@ const Group = () => {
             {/* Member Card */}
 
             {
-              groupDetails?.isLoading
-                ? <Skeleton />
+              isLoadingRemoveMember
+                ? <CircularProgress />
                 : groupDetails?.data?.chat?.members?.map((user) => {
                   return < UserItem user={user} key={user._id} isAdded
                     styling={{
@@ -322,9 +337,9 @@ const Group = () => {
       </Grid>
 
       {
-        isAddMember && (
+        isAddMemberModalOpen && (
           <Suspense fallback={<Backdrop open />}>
-            <AddMemberDialog />
+            <AddMemberDialog chatId={chatId} />
           </Suspense>
         )
       }

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
+import {useNavigate} from "react-router-dom"
 import Header from './Header'
 import Title from '../shared/Title'
 import Grid from '@mui/material/Grid2'
@@ -24,6 +25,7 @@ const AppLayout = () => {
 
             const params = useParams();
             const chatId = params.chatId;
+            const navigate = useNavigate();
 
             const socket = getSocket();
 
@@ -77,8 +79,9 @@ const AppLayout = () => {
             }, [])
 
             const refetchHandler = useCallback(()=>{
+                navigate("/");
                 refetch();  //refetching the chats using the useMyChatsQuery hook refetch function
-            }, [])
+            }, [navigate, refetch])
 
             //listening the event
             const eventHandler = {

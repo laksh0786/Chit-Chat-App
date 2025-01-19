@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Link } from '../styles/StyledComponents';
 import { Box, Stack, Typography } from '@mui/material';
 import AvatarCard from './Avatarcard';
+import {motion} from 'framer-motion';
 
 const ChatItem = ({
     avatar = [],
@@ -23,7 +24,9 @@ const ChatItem = ({
             }}
             to={`/chat/${_id}`} onContextMenu={(e) => handleDeleteChat(e, _id, groupChat)}>
 
-            <div style={{
+            <motion.div
+             initial={{opacity: 0, y: "-100%"}} whileInView={{opacity: 1, y: 0}} transition={{delay: index * 0.1}}
+             style={{
                 display: "flex",
                 alignItems: "center",
                 witdh: "100%",
@@ -83,7 +86,7 @@ const ChatItem = ({
                     />
                 )}
 
-            </div>
+            </motion.div>
         </Link>
     )
 }

@@ -153,11 +153,11 @@ const Chat = ({ chatId }) => {
 
   useEffect(()=>{
 
-    if(!chatDetails?.isLoading && !chatDetails?.data?.chat){
+    if(!chatDetails?.isLoading && !chatDetails?.isError){
       return navigate("/");
     }
 
-  }, [chatDetails?.data])
+  }, [chatDetails?.isError])
   
 
   // New message handler - wrapped in useCallback to prevent re-rendering
@@ -191,12 +191,14 @@ const Chat = ({ chatId }) => {
 
 
   // Alert handler
-  const alertHandler = useCallback((content)=>{
+  const alertHandler = useCallback((data)=>{
 
     // console.log(content)
 
+    if(data.chatId !== chatId) return;
+
     const messageForAlert = {
-      content,
+      content:data.message,
       sender:{
         _id:"idnwnpnidneini",
         name:"Admin",

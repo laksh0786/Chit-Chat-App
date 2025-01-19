@@ -22,6 +22,8 @@ const Login = () => {
     const dispatch = useDispatch();
 
     const [isLogin, setIsLogin] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+
     const [validationError, setValidationError] = useState({
         email: "",
         password: "",
@@ -78,7 +80,12 @@ const Login = () => {
     }
 
     const handleSignupSubmit = async (e) => {
+        
         e.preventDefault();
+
+        const toastId = toast.loading("Please wait while we are signing you in...");
+
+        setIsLoading(true);
 
         if (validationError.email || validationError.password || validationError.name) {
             toast.error("Please fill all the fields correctly");
@@ -107,20 +114,30 @@ const Login = () => {
             const {data} = await axios.post(`${server}${userRegister}` , formData , config);
             console.log(data);
 
-            dispatch(userExists(true));
+            dispatch(userExists(data.user));
 
-            toast.success(data.message);
+            toast.success(data.message, {
+                id: toastId
+            });
 
         } catch(err){
             
             // console.log(err);
-            toast.error(err?.response?.data?.message || "Something went wrong");
+            toast.error(err?.response?.data?.message || "Something went wrong",{
+                id: toastId
+            });
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const handleLoginSubmit = async (e) => {
         
         e.preventDefault();
+
+        const toastId = toast.loading("Please wait while we are logging you in...");
+
+        setIsLoading(true);
 
         if (validationError.email || validationError.password) {
             toast.error("Please fill all the fields correctly");
@@ -140,14 +157,20 @@ const Login = () => {
 
             console.log(data);
 
-            dispatch(userExists(true));
+            dispatch(userExists(data.user));
 
-            toast.success(data.message);
+            toast.success(data.message , {
+                id: toastId
+            });
 
         } catch(err){
 
             // console.log(err);
-            toast.error(err?.response?.data?.message || "Something went wrong" );
+            toast.error(err?.response?.data?.message || "Something went wrong",{
+                id: toastId
+            } );
+        } finally {
+            setIsLoading(false);
         }
 
     }
@@ -227,6 +250,7 @@ const Login = () => {
                                         sx={{
                                             marginTop: "1rem",
                                         }}
+                                        disabled={isLoading}
                                     >
                                         Login
                                     </Button>
@@ -244,6 +268,7 @@ const Login = () => {
                                         variant="text"
                                         fullWidth
                                         onClick={registerToggleHandler}
+                                        disabled={isLoading}
                                     >
                                         Don't have an account? Register
                                     </Button>
@@ -372,6 +397,7 @@ const Login = () => {
                                         type="submit"
                                         color="primary"
                                         fullWidth
+                                        disabled={isLoading}
                                         sx={{
                                             marginTop: "1rem",
                                         }}
@@ -392,6 +418,7 @@ const Login = () => {
                                         variant="text"
                                         fullWidth
                                         onClick={registerToggleHandler}
+                                        disabled={isLoading}
                                     >
                                         Already have an account? Login
                                     </Button>

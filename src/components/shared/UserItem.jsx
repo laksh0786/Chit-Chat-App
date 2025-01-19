@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
 import { transformImage } from "../../lib/feature"
 
-const UserItem = ({ user, handler, handlerIsLoading, isAdded = false, styling = {} }) => {
+const UserItem = ({ user, handler, handlerIsLoading, isAdded = false, styling = {}, groupChat, creator, admins }) => {
 
   // console.log(user);
   const { name, _id, avatar } = user;
@@ -45,6 +45,27 @@ const UserItem = ({ user, handler, handlerIsLoading, isAdded = false, styling = 
           }}
         >
           {name}
+          {
+            groupChat && (creator === _id) && (
+              <Typography
+                variant="div"
+                sx={{
+                  display: 'block',
+                  color: 'text.secondary',
+                  fontWeight: 'normal',
+                }}>Creator</Typography>
+            )
+          }
+          
+          {groupChat && admins.includes(_id) && (
+              <Typography
+                variant="div"
+                sx={{
+                  display: 'block',
+                  color: 'text.secondary',
+                  fontWeight: 'normal',
+                }}>Admin</Typography>
+            )}
         </Typography>
 
         <IconButton

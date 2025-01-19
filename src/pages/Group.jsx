@@ -35,7 +35,7 @@ const Group = () => {
 
   const groupDetails = useGetChatDetailsQuery({ chatId, populate: true }, { skip: !chatId });
 
-  // console.log(groupDetails.data);
+  console.log(groupDetails.data);
 
   const [renameGroupHandler, isLoadingRenameGroup] = useAsyncMutation(useRenameGroupMutation);
 
@@ -318,6 +318,9 @@ const Group = () => {
                 ? <CircularProgress />
                 : groupDetails?.data?.chat?.members?.map((user) => {
                   return < UserItem user={user} key={user._id} isAdded
+                    groupChat={groupDetails?.data?.chat?.groupChat}
+                    creator={groupDetails?.data?.chat?.creator}
+                    admins = {groupDetails?.data?.chat?.admins}
                     styling={{
                       boxShadow: '0px 0px 0.5rem rgba(0, 0, 0, 0.2)',
                       padding: "1rem 2rem",

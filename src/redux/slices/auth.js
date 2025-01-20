@@ -1,16 +1,18 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { adminLogin, adminLogout, verifyAdmin } from "../thunk/admin";
+import toast from "react-hot-toast";
 
 //initial state
 const initialState = {
     user: null,
-    isAdmin:false,
+    isAdmin: false,
     isLoading: true,
 };
 
 const authSlice = createSlice({
-    
-    name : "auth",
-    
+
+    name: "auth",
+
     initialState,
 
     reducers: {
@@ -20,17 +22,44 @@ const authSlice = createSlice({
             state.isLoading = false;
         },
 
-        userNotExists: (state)=>{
+        userNotExists: (state) => {
             state.user = null;
             state.isLoading = false;
         }
+    },
+
+    extraReducers: (builder) => {
+
+        builder
+            .addCase(adminLogin.fulfilled, (state, action) => {
+                state.isAdmin = true;
+                toast.success(action.payload);
+            })
+            .addCase(adminLogin.rejected, (state, action) => {
+                state.isAdmin = false;
+                toast.error(action.error.message);
+            })
+            .addCase(verifyAdmin.fulfilled, (state, action)=>{
+                state.isAdmin = action.payload;
+            })
+            .addCase(verifyAdmin.rejected, (state, action)=>{
+                state.isAdmin = false;
+            })
+            .addCase(adminLogout.fulfilled, (state, action) => {
+                state.isAdmin = false;
+                toast.success(action.payload);
+            })
+            .addCase(adminLogout.rejected, (state, action) => {
+                toast.error(action.error.message);
+            })
+
     }
 
 });
 
 
 //exporting the actions
-export const {userExists, userNotExists} = authSlice.actions;
+export const { userExists, userNotExists } = authSlice.actions;
 
 
 //exporting the slice to use reducer in the store

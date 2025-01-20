@@ -4,6 +4,8 @@ import { grayColor, matteBlack } from '../../constants/color';
 import { Box, Drawer, IconButton, Stack, styled, Typography } from '@mui/material';
 import { Close as CloseIcon, ManageAccounts as ManageAccountsIcon, Dashboard as DashboardIcon, Menu as MenuIcon, Groups as GroupsIcon, Message as MessageIcon, ExitToApp as ExitToAppIcon } from '@mui/icons-material';
 import { useLocation, Link as LinkComponent, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { adminLogout } from '../../redux/thunk/admin';
 
 // Styled Link component using styled from @mui/material
 const Link = styled(LinkComponent)(({ theme }) => ({
@@ -44,9 +46,12 @@ const adminTabs = [
 
 // Sidebar component
 const SideBar = ({ w = '100%' }) => {
+
+    const dispatch = useDispatch();
     const location = useLocation();
+    
     const logoutHandler = () => {
-        console.log('Logout');
+        dispatch(adminLogout());
     };
 
     return (
@@ -104,9 +109,10 @@ const SideBar = ({ w = '100%' }) => {
     );
 };
 
-const isAdmin = true;
 
 const AdminLayout = ({ children }) => {
+
+    const { isAdmin } = useSelector(state => state.auth);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     if (!isAdmin) {

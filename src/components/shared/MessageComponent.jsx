@@ -66,6 +66,7 @@ const MessageComponent = ({ message, user }) => {
                                 return <Box key={index}>
                                     <a href={url} target="_blank" download style={{
                                         color: "black",
+                                        margin: "0.5rem",
                                     }}>
                                         <RenderAttachment file={file} url={url} />
                                     </a>

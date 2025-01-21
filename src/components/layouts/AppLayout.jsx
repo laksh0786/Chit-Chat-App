@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react'
-import {useNavigate} from "react-router-dom"
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate } from "react-router-dom"
 import Header from './Header'
 import Title from '../shared/Title'
 import Grid from '@mui/material/Grid2'
@@ -12,8 +12,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setIsDeleteMenuOpen, setIsMobileMenu, setSelectedDeleteChat } from '../../redux/slices/misc'
 import useErrors from '../../hooks/useErrors.js'
 import { getSocket } from '../../socket.jsx'
-import {useSocketEvents} from "../../hooks/useSocketEvents.js"
-import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from '../../constants/event.js'
+import { useSocketEvents } from "../../hooks/useSocketEvents.js"
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS, ONLINE_USERS } from '../../constants/event.js'
 import { incrementNotifications, setNewMessagesAlert } from '../../redux/slices/chat.js'
 import { getOrSaveFromLocalStorage } from '../../lib/feature.js'
 import DeleteChatMenu from '../dialog/DeleteChatMenu.jsx'
@@ -35,6 +35,8 @@ const AppLayout = () => {
 
             const dispatch = useDispatch();
 
+            const [onlineUsers , setOnlineUsers] = useState([]);
+
             const { isMobileMenu } = useSelector(state => state.misc)
             const { user } = useSelector(state => state.auth)
             const { newMessageAlert } = useSelector(state => state.chat)
@@ -46,9 +48,9 @@ const AppLayout = () => {
             useErrors([{ isError, error }]);
 
 
-            useEffect(()=>{
+            useEffect(() => {
 
-                getOrSaveFromLocalStorage({key:NEW_MESSAGE_ALERT, value:newMessageAlert})
+                getOrSaveFromLocalStorage({ key: NEW_MESSAGE_ALERT, value: newMessageAlert })
 
             }, [newMessageAlert])
 
@@ -59,10 +61,10 @@ const AppLayout = () => {
 
             //function to open and handle the delete chat menu
             const handleDeleteChat = (e, _id, groupChat) => {
-                
+
                 dispatch(setIsDeleteMenuOpen(true));
 
-                dispatch(setSelectedDeleteChat({chatId : _id , groupChat}));
+                dispatch(setSelectedDeleteChat({ chatId: _id, groupChat }));
 
                 deleteOptionAnchor.current = e.currentTarget;
 
@@ -74,46 +76,53 @@ const AppLayout = () => {
             }
 
 
-            const newMessageAlertHandler = useCallback((data)=>{
+            const newMessageAlertHandler = useCallback((data) => {
 
                 //if chatId and received chatId is same then don't increment the notification
-                if(chatId === data.chatId) return;
+                if (chatId === data.chatId) return;
 
                 dispatch(setNewMessagesAlert(data));
 
             }, [chatId]) //in the dependency array we are adding chatId so that it will only re-render when chatId changes as we are using chatId in the function for comparison
 
 
-            const newRequestHandler = useCallback(()=>{
+            const newRequestHandler = useCallback(() => {
                 dispatch(incrementNotifications());
             }, [])
 
-            const refetchHandler = useCallback(()=>{
+            const refetchHandler = useCallback(() => {
                 navigate("/");
                 refetch();  //refetching the chats using the useMyChatsQuery hook refetch function
             }, [navigate, refetch])
 
+
+            //listening to online_users event
+            const onlineUsersHandler = useCallback((data) => {
+                // console.log("Online Users", data);
+                setOnlineUsers(data);
+            },[])
+
+
             //listening the event
             const eventHandler = {
-
-                [NEW_MESSAGE_ALERT] : newMessageAlertHandler, 
-                [NEW_REQUEST] : newRequestHandler,
-                [REFETCH_CHATS] : refetchHandler 
-            
+                [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
+                [NEW_REQUEST]: newRequestHandler,
+                [REFETCH_CHATS]: refetchHandler,
+                [ONLINE_USERS] : onlineUsersHandler
             };
 
-            useSocketEvents(socket , eventHandler);
-            
+            useSocketEvents(socket, eventHandler);
+
 
             return (
                 <>
                     <Title />
                     <Header />
 
-                    <DeleteChatMenu dispatch={dispatch} deleteOptionAnchor={deleteOptionAnchor}/>
+                    <DeleteChatMenu dispatch={dispatch} deleteOptionAnchor={deleteOptionAnchor} />
 
                     {
-                        isLoading ? (<Skeleton height={"100vh"}/>) : (
+                        isLoading ? (<Skeleton height={"100vh"} />) : (
                             <Drawer open={isMobileMenu} onClose={handleMobileMenuClose}>
                                 <ChatList
                                     w="70vw"
@@ -121,6 +130,7 @@ const AppLayout = () => {
                                     chatId={chatId}
                                     handleDeleteChat={handleDeleteChat}
                                     newMessagesAlert={newMessageAlert}
+                                    onlineUsers={onlineUsers}
                                 />
                             </Drawer>
                         )
@@ -136,12 +146,13 @@ const AppLayout = () => {
                             height={"100%"}
                         >
                             {
-                                isLoading ? (<Skeleton height={"100vh"}/>) : (
+                                isLoading ? (<Skeleton height={"100vh"} />) : (
                                     <ChatList
                                         chats={data?.chats}
                                         chatId={chatId}
                                         handleDeleteChat={handleDeleteChat}
                                         newMessagesAlert={newMessageAlert}
+                                        onlineUsers={onlineUsers}
                                     />
                                 )
                             }

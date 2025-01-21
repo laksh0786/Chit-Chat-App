@@ -34,7 +34,7 @@ const Group = () => {
 
   const groupDetails = useGetChatDetailsQuery({ chatId, populate: true }, { skip: !chatId });
 
-  console.log(groupDetails.data);
+  // console.log(groupDetails.data);
 
   const [renameGroupHandler, isLoadingRenameGroup] = useAsyncMutation(useRenameGroupMutation);
 

@@ -35,8 +35,7 @@ const api = createApi({
                 credentials: "include"  //this is used to include the cookies in the request
             }),
 
-            //provideTags is an array that helps us to provide tags to particular fetches. In this case, we are providing the "Chat" tag to the fetch so that when the data is updated, the cache is invalidated and the data is refetched from the API. We use invalidateTags to invalidate the cache when the data is updated in the updateChat mutation or Api.
-            providesTags: ["Chat"]
+            keepUnusedDataFor: 0 //this will remove the data from the cache after 0 seconds i.e no caching
 
         }),
 

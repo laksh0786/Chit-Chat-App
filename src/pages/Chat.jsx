@@ -7,7 +7,7 @@ import { InputBox } from '../components/styles/StyledComponents';
 import FileMenu from '../components/dialog/FileMenu';
 import MessageComponent from '../components/shared/MessageComponent';
 import { getSocket } from '../socket';
-import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/event';
+import { ALERT, CHAT_JOINED, CHAT_LEFT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../constants/event';
 import { useGetChatDetailsQuery, useGetChatMessagesQuery } from '../redux/api/api.rtk';
 import { useSocketEvents } from '../hooks/useSocketEvents';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,8 +47,9 @@ const Chat = ({ chatId }) => {
 
 
   // Fetch chat details we use skip when we don't have chatId
-  const chatDetails = useGetChatDetailsQuery({ chatId } , { skip: !chatId });
+  const chatDetails = useGetChatDetailsQuery({ chatId }, { skip: !chatId });
   const members = chatDetails?.data?.chat?.members;
+
 
   //getting the old messages of the chat
   const oldMessagesChunk = useGetChatMessagesQuery({ chatId, page });
@@ -83,7 +84,7 @@ const Chat = ({ chatId }) => {
 
     setMessage(e.target.value);
 
-    if(!isTyping){
+    if (!isTyping) {
       socket.emit(START_TYPING, { chatId, members });
       setIsTyping(true);
     }
@@ -94,7 +95,7 @@ const Chat = ({ chatId }) => {
     }
 
     typingTimeout.current = setTimeout(() => {
-      socket.emit(STOP_TYPING , { chatId, members });
+      socket.emit(STOP_TYPING, { chatId, members });
       setIsTyping(false);
     }, [2000]);
 
@@ -125,6 +126,9 @@ const Chat = ({ chatId }) => {
   }
 
   useEffect(() => {
+    
+    //setting the user online for the chat when the user enters the chat
+    socket.emit(CHAT_JOINED, { userId: user._id, members });
 
     //to remove the message alert when the user enters the chat or the chat is opened
     dispatch(removeMessageAlert(chatId));
@@ -137,6 +141,7 @@ const Chat = ({ chatId }) => {
       setMessage("");
       setPage(1);
       setOldMessages([]);
+      socket.emit(CHAT_LEFT, { userId: user._id, members })
     }
 
   }, [chatId])
@@ -144,21 +149,21 @@ const Chat = ({ chatId }) => {
 
   useEffect(() => {
 
-    if(bottomRef.current){
+    if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
 
   }, [messages])
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    if(!chatDetails?.isLoading && !chatDetails?.isError){
+    if (chatDetails?.isError) {
       return navigate("/");
     }
 
   }, [chatDetails?.isError])
-  
+
 
   // New message handler - wrapped in useCallback to prevent re-rendering
   //it is used to update the messages array when a new message is received
@@ -183,7 +188,7 @@ const Chat = ({ chatId }) => {
 
   // Stop typing handler
   const stopTypingHandler = useCallback((data) => {
-    
+
     if (data.chatId !== chatId) return;
     setTypingUser(false);
 
@@ -191,31 +196,31 @@ const Chat = ({ chatId }) => {
 
 
   // Alert handler
-  const alertHandler = useCallback((data)=>{
+  const alertHandler = useCallback((data) => {
 
     // console.log(content)
 
-    if(data.chatId !== chatId) return;
+    if (data.chatId !== chatId) return;
 
     const messageForAlert = {
-      content:data.message,
-      sender:{
-        _id:"idnwnpnidneini",
-        name:"Admin",
+      content: data.message,
+      sender: {
+        _id: "idnwnpnidneini",
+        name: "Admin",
       },
-      chat:chatId,
+      chat: chatId,
       createdAt: new Date().toISOString(),
     }
 
     setMessages(prev => [...prev, messageForAlert]);
 
   }, [chatId])
-  
+
 
 
   // Event handlers object
   const eventHandler = {
-    [ALERT] : alertHandler,
+    [ALERT]: alertHandler,
     [NEW_MESSAGE]: newMessageHandler,
     [START_TYPING]: startTypingHandler,
     [STOP_TYPING]: stopTypingHandler
@@ -229,7 +234,7 @@ const Chat = ({ chatId }) => {
   const allMessages = [...oldMessages, ...messages];
 
 
-  return chatDetails.isLoading ? <Skeleton height={"100vh"}/> : (
+  return chatDetails.isLoading ? <Skeleton height={"100vh"} /> : (
     <>
 
       {/* Messages Container */}
@@ -253,10 +258,10 @@ const Chat = ({ chatId }) => {
         }
 
         {
-          typingUser && <TypingLoader/>
+          typingUser && <TypingLoader />
         }
 
-        <div ref={bottomRef}/>
+        <div ref={bottomRef} />
 
       </Stack>
 

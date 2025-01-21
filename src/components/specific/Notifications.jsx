@@ -79,7 +79,7 @@ const Notifications = () => {
         </DialogTitle>
 
         {
-          isLoading ? <Skeleton /> : <>
+          isLoading ? <Skeleton height={"100vh"}/> : <>
             {
               data?.allRequests?.length > 0 ?
                 data?.allRequests?.map((notification) => (

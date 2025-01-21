@@ -237,6 +237,28 @@ const api = createApi({
             }),
 
             invalidatesTags:["Chat"]
+        }),
+
+        getDashboardStats : builder.query({
+
+            query: ()=>({
+                url: '/admin/stats',
+                credentials: "include"
+            }),
+
+            //keepUnusedDataFor is used to remove the data from the cache after 0 seconds i.e no caching
+            keepUnusedDataFor: 0
+        }),
+
+
+        getAdminUserData : builder.query({
+
+            query: ()=>({
+                url: '/admin/users',
+                credentials: "include"
+            }),
+            keepUnusedDataFor: 0
+        
         })
 
     })
@@ -265,5 +287,7 @@ export const {
     useAddGroupMembersMutation,
     useRemoveGroupMemberMutation,
     useDeleteChatMutation,
-    useLeaveGroupMutation
+    useLeaveGroupMutation,
+    useGetDashboardStatsQuery,
+    useGetAdminUserDataQuery
 } = api

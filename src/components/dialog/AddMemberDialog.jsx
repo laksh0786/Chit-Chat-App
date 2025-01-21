@@ -60,7 +60,7 @@ const AddMemberDialog = ({chatId }) => {
 
                 <Stack spacing={"1rem"}>
 
-                    {isLoading ? <Skeleton/> : data?.friends?.length > 0 ?
+                    {isLoading ? <Skeleton height={"100vh"}/> : data?.friends?.length > 0 ?
                         data?.friends?.map((user) => {
                             return <UserItem key={user._id}
                                         user={user}

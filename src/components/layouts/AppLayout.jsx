@@ -113,7 +113,7 @@ const AppLayout = () => {
                     <DeleteChatMenu dispatch={dispatch} deleteOptionAnchor={deleteOptionAnchor}/>
 
                     {
-                        isLoading ? (<Skeleton />) : (
+                        isLoading ? (<Skeleton height={"100vh"}/>) : (
                             <Drawer open={isMobileMenu} onClose={handleMobileMenuClose}>
                                 <ChatList
                                     w="70vw"
@@ -136,7 +136,7 @@ const AppLayout = () => {
                             height={"100%"}
                         >
                             {
-                                isLoading ? (<Skeleton />) : (
+                                isLoading ? (<Skeleton height={"100vh"}/>) : (
                                     <ChatList
                                         chats={data?.chats}
                                         chatId={chatId}

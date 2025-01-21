@@ -1,18 +1,17 @@
-import React, { lazy, memo, Suspense, useEffect, useState } from 'react';
-import { matteBlack, lightGray, lightBlue as primaryColor, darkGray, lightBlue, orange } from '../constants/color';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import AvatarCard from '../components/shared/Avatarcard';
-import LayoutLoader from "../components/layouts/LayoutLoader"
-import { sampleChats, sampleUsers } from '../constants/sampleData';
-import { Link } from '../components/styles/StyledComponents';
 import { Add as AddIcon, Delete as DeleteIcon, Done as DoneIcon, Edit as EditIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon } from '@mui/icons-material';
-import { Backdrop, Box, Button, CircularProgress, Drawer, IconButton, Skeleton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, Drawer, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import UserItem from '../components/shared/UserItem';
-import { useAddGroupMembersMutation, useDeleteChatMutation, useGetChatDetailsQuery, useGetMyGroupsQuery, useRemoveGroupMemberMutation, useRenameGroupMutation } from '../redux/api/api.rtk';
-import useErrors from '../hooks/useErrors';
-import useAsyncMutation from '../hooks/useAsyncMutation';
+import React, { lazy, memo, Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import LayoutLoader from "../components/layouts/LayoutLoader";
+import AvatarCard from '../components/shared/AvatarCard';
+import UserItem from '../components/shared/UserItem';
+import { Link } from '../components/styles/StyledComponents';
+import { darkGray, lightBlue, lightGray, matteBlack, lightBlue as primaryColor } from '../constants/color';
+import useAsyncMutation from '../hooks/useAsyncMutation';
+import useErrors from '../hooks/useErrors';
+import { useDeleteChatMutation, useGetChatDetailsQuery, useGetMyGroupsQuery, useRemoveGroupMemberMutation, useRenameGroupMutation } from '../redux/api/api.rtk';
 import { setIsAddMemberModalOpen } from '../redux/slices/misc';
 
 const ConfirmDeleteDialog = lazy(() => import('../components/dialog/ConfirmDeleteDialog'));

@@ -229,7 +229,7 @@ const Chat = ({ chatId }) => {
   const allMessages = [...oldMessages, ...messages];
 
 
-  return chatDetails.isLoading ? <Skeleton /> : (
+  return chatDetails.isLoading ? <Skeleton height={"100vh"}/> : (
     <>
 
       {/* Messages Container */}

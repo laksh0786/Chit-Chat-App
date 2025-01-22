@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Link } from '../styles/StyledComponents';
 import { Box, Stack, Typography } from '@mui/material';
-import AvatarCard from './Avatarcard';
+import AvatarCard from './AvatarCard';
 import {motion} from 'framer-motion';
 
 const ChatItem = ({

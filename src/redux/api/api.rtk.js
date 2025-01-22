@@ -35,8 +35,8 @@ const api = createApi({
                 credentials: "include"  //this is used to include the cookies in the request
             }),
 
-            keepUnusedDataFor: 0 //this will remove the data from the cache after 0 seconds i.e no caching
-
+            providesTags: ["Chat"] //this is used to invalidate the cache when the data is updated
+            // keepUnusedDataFor: 0 //this will remove the data from the cache after 0 seconds i.e no caching
         }),
 
         //search users endpoint to search users by name and includes pagination

@@ -10,7 +10,6 @@ import {
     Notifications as NotificationsIcon
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { server } from '../../constants/config'
 import { userLogout } from '../../constants/apiEndpoints'
 import toast from 'react-hot-toast'
@@ -18,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/slices/auth'
 import { setIsMobileMenu, setIsNewGroupModalOpen, setIsNotificationModalOpen, setIsSearchModalOpen } from '../../redux/slices/misc'
 import { resetNotificationCount } from '../../redux/slices/chat'
+import { privateRequest } from '../../../services/axiosConfig'
 
 const SearchDialog = lazy(() => import('../specific/Search'));
 const NotificationsDialog = lazy(() => import('../specific/Notifications'));
@@ -59,7 +59,7 @@ const Header = () => {
     const logoutHandler = () => {
         
         //manage logout
-        axios.get(`${server}${userLogout}` , {withCredentials:true}).then(({data})=>{
+        privateRequest.get(`${server}${userLogout}` , {withCredentials:true}).then(({data})=>{
             // console.log(data);
             toast.success(data.message);
             dispatch(userNotExists());

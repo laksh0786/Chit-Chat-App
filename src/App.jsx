@@ -4,11 +4,11 @@ import ProtectRoute from './components/auth/ProtectRoute';
 import LayoutLoader from './components/layouts/LayoutLoader';
 import { server } from './constants/config';
 import { getMyProfile } from './constants/apiEndpoints';
-import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import {userExists, userNotExists} from "./redux/slices/auth";
 import {Toaster} from 'react-hot-toast';
 import { SocketProvider } from './socket';
+import { privateRequest } from '../services/axiosConfig';
 
 
 //This is lazy loading of components that is used for code splitting which is a performance optimization technique that allows you to load only the required modules on the initial load and then load the rest of the modules on demand.
@@ -38,7 +38,7 @@ const App = () => {
 
     //we have to withCredentials to true to send the cookies
     //cookies are automatically sent by the browser when we set the withCredentials to true
-    axios.get(`${server}${getMyProfile}`, {withCredentials:true})
+    privateRequest.get(`${server}${getMyProfile}`, {withCredentials:true})
       .then(({data}) => {
         dispatch(userExists(data.user));
       })

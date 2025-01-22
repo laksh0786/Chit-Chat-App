@@ -5,11 +5,11 @@ import { VisuallyHiddenInput } from '../components/styles/StyledComponents';
 import { dataValidator } from '../utils/validators';
 import { server } from '../constants/config';
 import { useDispatch } from 'react-redux';
-import { userExists } from '../redux/slices/auth';
+import { setToken, userExists } from '../redux/slices/auth';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import { userLogin, userRegister } from '../constants/apiEndpoints';
 import {useFileHandler} from '6pp'
+import { privateRequest } from '../../services/axiosConfig';
 
 //variant prop is used to change the style of the textfield
 //component prop is used to change the semantic element of the textfield 
@@ -111,7 +111,7 @@ const Login = () => {
                 }
             }
 
-            const {data} = await axios.post(`${server}${userRegister}` , formData , config);
+            const {data} = await privateRequest.post(`${server}${userRegister}` , formData , config);
             console.log(data);
 
             dispatch(userExists(data.user));
@@ -153,9 +153,11 @@ const Login = () => {
 
         try{
 
-            const {data} = await axios.post(`${server}${userLogin}` , loginData , config)
+            const {data} = await privateRequest.post(`${server}${userLogin}` , loginData , config)
 
             console.log(data);
+
+            localStorage.setItem("token" , data.token);
 
             dispatch(userExists(data.user));
 

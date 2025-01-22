@@ -98,7 +98,7 @@ const NewGroup = () => {
 
         <Stack>
 
-          {isLoading ? <Skeleton height={"100vh"}/> : data?.friends?.map((user) => (
+          {isLoading ? <Skeleton height={"50vh"}/> : data?.friends?.map((user) => (
             <UserItem
               user={user}
               key={user._id}

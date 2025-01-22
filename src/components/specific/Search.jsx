@@ -32,10 +32,9 @@ const Search = () => {
   const dispatch = useDispatch();
 
   const addFriendHandler = async (id) => {
-
     // console.log(id);
     await sendFriendRequestMutateHandler("Sending friend request...", { userId: id });
-
+    dispatch(setIsSearchModalOpen(false));
   };
 
   const closeSearchModalHandler = () => {

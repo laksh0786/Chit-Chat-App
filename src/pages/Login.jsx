@@ -1,15 +1,15 @@
+import { useFileHandler } from '6pp';
 import { CameraAlt } from '@mui/icons-material';
-import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { VisuallyHiddenInput } from '../components/styles/StyledComponents';
-import { dataValidator } from '../utils/validators';
-import { server } from '../constants/config';
-import { useDispatch } from 'react-redux';
-import { setToken, userExists } from '../redux/slices/auth';
+import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { userLogin, userRegister } from '../constants/apiEndpoints';
-import {useFileHandler} from '6pp'
+import { useDispatch } from 'react-redux';
 import { privateRequest } from '../../services/axiosConfig';
+import { VisuallyHiddenInput } from '../components/styles/StyledComponents';
+import { userLogin, userRegister } from '../constants/apiEndpoints';
+import { server } from '../constants/config';
+import { userExists } from '../redux/slices/auth';
+import { dataValidator } from '../utils/validators';
 
 //variant prop is used to change the style of the textfield
 //component prop is used to change the semantic element of the textfield 

@@ -14,8 +14,10 @@ const adminLogin = createAsyncThunk("admin/login", async (secretKey) => {
 
         const { data } = await axios.post(`${server}/api/v1/admin/verify`, { secretKey }, config);
 
+        localStorage.setItem("adminToken", data.token);
+
         return data.message;
-    
+
     } catch (error) {
 
         //we have to throw the error so that the rejected action is dispatched
@@ -27,38 +29,46 @@ const adminLogin = createAsyncThunk("admin/login", async (secretKey) => {
 })
 
 
-const verifyAdmin = createAsyncThunk("admin/verify" , async ()=>{
-    try{
+const verifyAdmin = createAsyncThunk("admin/verify", async () => {
+    try {
 
         const config = {
-            withCredentials: true
+            withCredentials: true,
+            headers: {
+                "AdminAuthorization": `Bearer ${localStorage.getItem("adminToken")}`
+            }
         }
 
-        const {data} = await axios.get(`${server}/api/v1/admin`, config);
+        const { data } = await axios.get(`${server}/api/v1/admin`, config);
 
         // console.log(data);
 
         return data.admin;
 
-    } catch(err){
+    } catch (err) {
         throw err.response.data.message
     }
 })
 
 
-const adminLogout = createAsyncThunk("admin/logout" , async ()=>{
+const adminLogout = createAsyncThunk("admin/logout", async () => {
 
-    try{
+    try {
 
         const config = {
-            withCredentials : true
+            withCredentials: true,
+            headers: {
+                "AdminAuthorization": `Bearer ${localStorage.getItem("adminToken")}`
+            }
         }
 
-        const {data} = await axios.get(`${server}/api/v1/admin/logout`, config);
+        const { data } = await axios.get(`${server}/api/v1/admin/logout`, config);
+
+        localStorage.removeItem("adminToken");
 
         return data.message;
 
-    } catch(err){
+    } catch (err) {
         throw err.response.data.message
     }
 
@@ -66,4 +76,4 @@ const adminLogout = createAsyncThunk("admin/logout" , async ()=>{
 
 
 
-export {adminLogin, verifyAdmin, adminLogout};
+export { adminLogin, verifyAdmin, adminLogout };

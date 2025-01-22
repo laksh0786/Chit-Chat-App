@@ -7,7 +7,6 @@ const initialState = {
     user: null,
     isAdmin: false,
     isLoading: true,
-    token: localStorage.getItem("token") ? localStorage.getItem("token") : null
 };
 
 const authSlice = createSlice({
@@ -26,9 +25,6 @@ const authSlice = createSlice({
         userNotExists: (state) => {
             state.user = null;
             state.isLoading = false;
-        },
-        setToken : (state, action) => {
-            state.token = action.payload;
         }
     },
 
@@ -63,7 +59,7 @@ const authSlice = createSlice({
 
 
 //exporting the actions
-export const { userExists, userNotExists, setToken } = authSlice.actions;
+export const { userExists, userNotExists} = authSlice.actions;
 
 
 //exporting the slice to use reducer in the store

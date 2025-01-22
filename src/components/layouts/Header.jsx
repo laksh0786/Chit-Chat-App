@@ -62,6 +62,7 @@ const Header = () => {
         privateRequest.get(`${server}${userLogout}` , {withCredentials:true}).then(({data})=>{
             // console.log(data);
             toast.success(data.message);
+            localStorage.removeItem("token");
             dispatch(userNotExists());
         }).catch((err)=>{
             // console.log(err);

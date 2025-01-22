@@ -19,7 +19,10 @@ const api = createApi({
     //the base query function that will be used to make the API requests it takes an object with the baseUrl property that specifies the base URL of the API that we want to fetch data from.
     baseQuery: fetchBaseQuery({
         baseUrl: `${server}/api/v1`,
-        headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}, 
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            AdminAuthorization: `Bearer ${localStorage.getItem("adminToken")}`
+        }, 
     }),
 
     //in rtk query data is cached by default and on updating the data the data is not updated so we provide tagTypes to invalidate the cache. tagTypes is an array of strings that define the types of tags that we want to invalidate when the data is updated. in simple words, when the data is updated, the cache is invalidated and the data is refetched from the API.

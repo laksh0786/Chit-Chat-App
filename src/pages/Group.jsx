@@ -324,7 +324,7 @@ const Group = () => {
                       boxShadow: '0px 0px 0.5rem rgba(0, 0, 0, 0.2)',
                       padding: "1rem 2rem",
                       borderRadius: "1rem",
-                      boxShadow: "0 0 0 0",
+                      // boxShadow: "0 0 0 0",
                     }}
                     handler={removeMemberHandler}
                   />

@@ -26,6 +26,9 @@ const SocketProvider = ({ children }) => {
         return (
             io(server, {
                 withCredentials: true,
+                auth: {
+                    token: localStorage.getItem("token")
+                }
             })
         )
 

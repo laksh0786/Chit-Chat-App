@@ -80,7 +80,7 @@ const Login = () => {
     }
 
     const handleSignupSubmit = async (e) => {
-        
+
         e.preventDefault();
 
         const toastId = toast.loading("Please wait while we are signing you in...");
@@ -102,17 +102,19 @@ const Login = () => {
 
         formData.append("avatar", avatar.file);
 
-        try{
+        try {
 
             const config = {
                 withCredentials: true,
-                headers:{
+                headers: {
                     "Content-Type": "multipart/form-data"
                 }
             }
 
-            const {data} = await privateRequest.post(`${server}${userRegister}` , formData , config);
-            console.log(data);
+            const { data } = await privateRequest.post(`${server}${userRegister}`, formData, config);
+            // console.log(data);
+
+            localStorage.setItem("token", data.token);
 
             dispatch(userExists(data.user));
 
@@ -120,10 +122,10 @@ const Login = () => {
                 id: toastId
             });
 
-        } catch(err){
-            
+        } catch (err) {
+
             // console.log(err);
-            toast.error(err?.response?.data?.message || "Something went wrong",{
+            toast.error(err?.response?.data?.message || "Something went wrong", {
                 id: toastId
             });
         } finally {
@@ -132,7 +134,7 @@ const Login = () => {
     }
 
     const handleLoginSubmit = async (e) => {
-        
+
         e.preventDefault();
 
         const toastId = toast.loading("Please wait while we are logging you in...");
@@ -143,34 +145,34 @@ const Login = () => {
             toast.error("Please fill all the fields correctly");
             return;
         }
-        
+
         const config = {
             withCredentials: true,
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             }
         };
 
-        try{
+        try {
 
-            const {data} = await privateRequest.post(`${server}${userLogin}` , loginData , config)
+            const { data } = await privateRequest.post(`${server}${userLogin}`, loginData, config)
 
-            console.log(data);
+            // console.log(data);
 
-            localStorage.setItem("token" , data.token);
+            localStorage.setItem("token", data.token);
 
             dispatch(userExists(data.user));
 
-            toast.success(data.message , {
+            toast.success(data.message, {
                 id: toastId
             });
 
-        } catch(err){
+        } catch (err) {
 
             // console.log(err);
-            toast.error(err?.response?.data?.message || "Something went wrong",{
+            toast.error(err?.response?.data?.message || "Something went wrong", {
                 id: toastId
-            } );
+            });
         } finally {
             setIsLoading(false);
         }
@@ -178,8 +180,8 @@ const Login = () => {
     }
 
     return (
-        <div style = {{
-            backgroundImage:"linear-gradient(rgba(200,200,200,0.5) , rgba(120 , 110 , 220 , 0.5)",
+        <div style={{
+            backgroundImage: "linear-gradient(rgba(200,200,200,0.5) , rgba(120 , 110 , 220 , 0.5)",
         }}
         >
             <Container component={"main"} maxWidth="xs" className=' h-screen flex items-center content-center'>

@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { data, isLoading, isError, error } = useGetDashboardStatsQuery("");
   const { stats } = data || {};
 
-  console.log("Dashboard stats", stats)
+  // console.log("Dashboard stats", stats)
 
   useErrors([{
     isError: isError,
